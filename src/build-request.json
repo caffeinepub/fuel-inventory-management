@@ -1,0 +1,59 @@
+{
+  "kind": "build_request",
+  "title": "Enable Add New Staff Member option for Admin and Manager roles",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-26",
+      "text": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "admin level and manager level add a new staff member option available"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users with Owner role can see and click the 'Add New Staff Member' button",
+        "Users with Manager role can see and click the 'Add New Staff Member' button",
+        "Users with Operator and Attendant roles cannot see or access the 'Add New Staff Member' button",
+        "The button functionality works correctly for both Owner and Manager roles"
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Update backend access control in the addStaffMember function to allow both Owner and Manager roles to add new staff members",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "admin level and manager level add a new staff member option available"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The addStaffMember function accepts requests from users with Owner role",
+        "The addStaffMember function accepts requests from users with Manager role",
+        "The addStaffMember function rejects requests from users with Operator or Attendant roles",
+        "Appropriate error messages are returned when unauthorized users attempt to add staff"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify the Internet Identity authentication flow",
+    "Maintain the existing UI component structure in StaffManagement",
+    "Preserve all existing role-based access control patterns for other features"
+  ],
+  "nonGoals": [
+    "Changing the staff member form fields or validation logic",
+    "Modifying other role permissions beyond adding staff members",
+    "Adding new roles beyond the existing Owner, Manager, Operator, and Attendant"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

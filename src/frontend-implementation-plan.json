@@ -1,0 +1,24 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Enable Add New Staff Member option for Admin and Manager roles",
+  "requirements": [
+    {
+      "id": "REQ-26",
+      "summary": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
+      "acceptanceCriteria": [
+        "Users with Owner role can see and click the 'Add New Staff Member' button",
+        "Users with Manager role can see and click the 'Add New Staff Member' button",
+        "Users with Operator and Attendant roles cannot see or access the 'Add New Staff Member' button",
+        "The button functionality works correctly for both Owner and Manager roles"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/StaffManagement.tsx",
+          "operation": "modify",
+          "description": "Update the access control logic to allow both Owner and Manager roles to see and use the 'Add New Staff Member' button. Modify the condition that currently restricts this button to Manager role only, expanding it to include Owner (admin) role as well. Ensure the button remains hidden for Operator and Attendant roles. The existing role-based UI pattern should be preserved, only expanding the allowed roles for this specific action."
+        }
+      ]
+    }
+  ]
+}

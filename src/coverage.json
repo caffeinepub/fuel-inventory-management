@@ -1,0 +1,50 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-22T09:26:35.961Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-26",
+        "summary": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/StaffManagement.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/StaffManagement.tsx"
+        ]
+      },
+      {
+        "id": "REQ-27",
+        "summary": "Update backend access control in the addStaffMember function to allow both Owner and Manager roles to add new staff members",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/StaffManagement.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

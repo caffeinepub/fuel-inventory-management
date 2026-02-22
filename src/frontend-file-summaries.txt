@@ -1,0 +1,16 @@
+{
+  "frontend/src/components/SalesReports.tsx": "Sales reporting component with daily/weekly/monthly views showing revenue, fuel type breakdown, and transaction history.",
+  "frontend/src/components/FuelTypeAnalytics.tsx": "Fuel type performance analytics comparing Petrol vs Diesel sales volume, revenue, and distribution percentages.",
+  "frontend/src/components/AnalyticsCharts.tsx": "Visual analytics component using Recharts to display sales trends over time and fuel type comparisons with line and bar charts.",
+  "frontend/src/components/PriceUpdateModule.tsx": "Admin-only price management component for updating fuel prices and viewing price history.",
+  "frontend/src/components/PaymentSuccess.tsx": "Payment success confirmation page displayed after successful Stripe payment completion.",
+  "frontend/src/components/PaymentFailure.tsx": "Payment failure page displayed when Stripe payment is cancelled or fails.",
+  "frontend/src/components/ProfileSetup.tsx": "User profile setup modal prompting new users to enter name, phone number, and staff role (including Owner) on first login.",
+  "frontend/src/components/LoginButton.tsx": "Login/logout button component using Internet Identity authentication with query cache clearing on logout.",
+  "frontend/src/components/SalesForm.tsx": "Sales transaction form for recording new fuel sales with fuel type selection, quantity input, staff assignment, and automatic total calculation. Fixed enum type initialization.",
+  "frontend/src/components/TankMonitor.tsx": "Tank monitoring component displaying fuel levels with progress bars, alerts for low levels, and forms to add or update tanks. Fixed enum type initialization.",
+  "frontend/src/components/ExpenseLogger.tsx": "Expense tracking component with category-based logging, breakdown visualization, and expense history table. Fixed enum type initialization using ExpenseCategory enum values.",
+  "frontend/src/components/StaffManagement.tsx": "Staff management interface that allows both Owners and Managers to add new staff members, with role-based access control for viewing and managing staff, and admin-only permissions for removing staff.",
+  "frontend/src/index.css": "Global CSS file with Tailwind directives and OKLCH color system variables for light and dark themes, defining design tokens for the fuel station management application.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including a new useCanManageStaff hook that checks if the user has Owner or Manager role, with StaffRole imported as a regular import for runtime value comparison."
+}

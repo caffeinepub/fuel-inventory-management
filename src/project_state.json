@@ -1,0 +1,361 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 9,
+  "summary": "Fuel station management application with inventory tracking, sales & billing, staff management, cash tracking, analytics, and operational tools",
+  "architectural_notes": [
+    "Multi-module architecture: Inventory, Sales, Staff, Finance, Analytics, Operations",
+    "Real-time monitoring capabilities required for tank levels and sales",
+    "Integration points: SMS/WhatsApp APIs, POS systems, GST/accounting software, payment gateways",
+    "Role-based access: Owner, manager, staff levels with appropriate permissions",
+    "Mobile-first design for owner monitoring app"
+  ],
+  "known_issues": [
+    "Staff Management: 'Add New Staff Member' displays 'failed to add staff member' error",
+    "Staff Management: Commission rate (%) field was unintentionally removed from the staff form"
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-implement-tank-level-monitoring-system-that-tracks-fuel-levels-for-multiple-tanks-petrol-diesel-with-current-volume-capacity-and-percentage-filled",
+      "title": "Implement tank level monitoring system that tracks fuel levels for multiple tanks (Petrol, Diesel) with current volume, capacity, and percentage filled",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-automatic-alert-system-that-triggers-notifications-when-tank-levels-fall-below-configurable-thresholds-for-refill",
+      "title": "Create automatic alert system that triggers notifications when tank levels fall below configurable thresholds for refill",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-daily-stock-reconciliation-feature-that-compares-opening-stock-purchases-sales-and-closing-stock-with-variance-reporting",
+      "title": "Build daily stock reconciliation feature that compares opening stock, purchases, sales, and closing stock with variance reporting",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-sales-and-billing-system-with-invoice-generation-fuel-type-selection-quantity-rate-and-total-calculation",
+      "title": "Implement sales and billing system with invoice generation, fuel type selection, quantity, rate, and total calculation",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-staff-management-module-with-staff-profiles-login-credentials-and-role-assignment-manager-operator-attendant",
+      "title": "Build staff management module with staff profiles, login credentials, and role assignment (Manager, Operator, Attendant)",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-shift-management-system-with-shift-start-end-times-staff-assignment-and-attendance-tracking",
+      "title": "Implement shift management system with shift start/end times, staff assignment, and attendance tracking",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-shift-wise-sales-reporting-that-aggregates-all-sales-cash-collection-and-expenses-per-shift-with-staff-details",
+      "title": "Create shift-wise sales reporting that aggregates all sales, cash collection, and expenses per shift with staff details",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-commission-and-incentive-calculation-system-based-on-sales-volume-or-value-with-configurable-rates-per-staff-member",
+      "title": "Build commission and incentive calculation system based on sales volume or value with configurable rates per staff member",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-daily-cash-collection-entry-system-recording-cash-received-from-sales-with-denomination-breakdown-and-total-reconciliation",
+      "title": "Implement daily cash collection entry system recording cash received from sales with denomination breakdown and total reconciliation",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-expense-logging-system-with-categories-maintenance-electricity-salaries-supplies-including-amount-date-and-description",
+      "title": "Create expense logging system with categories (maintenance, electricity, salaries, supplies) including amount, date, and description",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-profit-and-loss-dashboard-calculating-total-revenue-total-expenses-and-net-profit-loss-with-visual-indicators",
+      "title": "Build profit and loss dashboard calculating total revenue, total expenses, and net profit/loss with visual indicators",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-sales-reporting-with-daily-weekly-and-monthly-views-showing-total-sales-fuel-type-breakdown-and-transaction-counts",
+      "title": "Implement sales reporting with daily, weekly, and monthly views showing total sales, fuel type breakdown, and transaction counts",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-fuel-type-performance-analytics-comparing-petrol-vs-diesel-sales-volume-revenue-and-trends-over-time",
+      "title": "Create fuel type performance analytics comparing Petrol vs Diesel sales volume, revenue, and trends over time",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-visual-analytics-with-line-and-bar-charts-showing-sales-trends-fuel-type-distribution-and-forecasting-patterns",
+      "title": "Create visual analytics with line and bar charts showing sales trends, fuel type distribution, and forecasting patterns",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-price-update-module-allowing-fuel-price-changes-with-effective-date-and-automatic-application-to-new-sales",
+      "title": "Implement price update module allowing fuel price changes with effective date and automatic application to new sales",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-modern-professional-dashboard-interface-with-a-clean-layout-using-a-neutral-color-palette-grey-white-black-accents-and-clear-typography-suitable-for-a-business-management-application-include-cards-for-key-metrics-intuitive-navigation-and-data-dense-tables-and-charts-that-emphasize-readability-and-quick-data-access",
+      "title": "Design a modern, professional dashboard interface with a clean layout using a neutral color palette (grey, white, black accents) and clear typography suitable for a business management application. Include cards for key metrics, intuitive navigation, and data-dense tables and charts that emphasize readability and quick data access.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-profilesetup-component-to-include-owner-in-the-role-selection-dropdown-maintaining-the-existing-ui-pattern-for-role-selection",
+      "title": "Update the ProfileSetup component to include 'Owner' in the role selection dropdown, maintaining the existing UI pattern for role selection",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-staffmanagement-component-to-include-owner-in-the-role-selection-dropdown-when-adding-or-editing-staff-members",
+      "title": "Update the StaffManagement component to include 'Owner' in the role selection dropdown when adding or editing staff members",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-add-new-staff-member-functionality-in-the-staffmanagement-component-to-successfully-add-staff-members-instead-of-displaying-failed-to-add-staff-member-error",
+      "title": "Fix the 'Add New Staff Member' functionality in the StaffManagement component to successfully add staff members instead of displaying 'failed to add staff member' error",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restore-the-commission-rate-field-to-the-staff-member-form-in-the-staffmanagement-component",
+      "title": "Restore the 'commission rate (%)' field to the staff member form in the StaffManagement component",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-staffmanagement-component-to-enable-the-add-new-staff-member-button-for-users-with-admin-owner-role-in-addition-to-the-existing-manager-role-access",
+      "title": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Tank levels monitoring with automatic refill alerts",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Daily stock reconciliation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Digital receipts via SMS/WhatsApp",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "POS integration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Credit/Debit customer account tracking",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Staff login/attendance tracking",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Shift-wise sales reports",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Commission/incentive calculation for staff",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Daily cash collection entry and expense logging",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Profit/loss dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Daily/weekly/monthly sales reports with fuel type-wise performance",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Customer insights and analytics with trend graphs",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Price update module for automatic fuel price changes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Complaint/Service log for equipment and maintenance",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "GST/Accounting software integration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Mobile app for owner with real-time monitoring",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Customer loyalty program with points and discounts",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "QR code and UPI payment integration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Create customer account management system supporting credit and debit tracking with balance, transaction history, and payment recording",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Build customer insights module tracking customer purchase frequency, total spend, and identifying repeat customers",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Build complaint and service log system recording equipment breakdowns, service requests, status, and resolution details",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Create customer loyalty program with points accumulation based on purchases and redemption for discounts",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Add 'Owner' role option to staff management system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "Add 'Owner' as a fourth role option to the StaffRole enum in the backend main actor, alongside the existing Manager, Operator, and Attendant roles",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Make 'Add New Staff Member' option available to both Admin and Manager role levels",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Update backend access control in the addStaffMember function to allow both Owner and Manager roles to add new staff members",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Fuel Inventory Management",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

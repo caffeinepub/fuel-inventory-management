@@ -1,0 +1,16 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-22T09:26:35.958Z",
+  "summary": "The diff implements both REQ-26 and REQ-27 correctly. The frontend StaffManagement component now enables the 'Add New Staff Member' button for both Owner and Manager roles via a useCanManageStaff hook that checks staffRole. The backend main.mo file includes role-based access control that allows both Owner and Manager roles to perform staff management operations. All acceptance criteria appear to be satisfied based on the diff evidence.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.92,
+  "changed_files": [
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/StaffManagement.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json"
+  ]
+}
