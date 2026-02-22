@@ -1,29 +1,21 @@
 import Map "mo:core/Map";
-import Nat "mo:core/Nat";
 import List "mo:core/List";
+import Nat "mo:core/Nat";
 import Principal "mo:core/Principal";
 
 module {
-  // Old Staff Type without serial number.
-  type OldStaff = {
-    id : Principal;
-    name : Text;
-    role : {
-      #manager;
-      #operator;
-      #attendant;
-      #owner;
-    };
-    commissionRate : Float;
-  };
-
-  // Old Shift Type with sales as List
-  type OldShift = {
+  // Old types
+  type OldExpense = {
     id : Nat;
-    staffId : Principal;
-    startTime : Int;
-    endTime : ?Int;
-    sales : List.List<OldSale>; // Make persistent array for compatibility
+    category : {
+      #maintenance;
+      #electricity;
+      #salaries;
+      #supplies;
+    };
+    amount : Float;
+    description : Text;
+    timestamp : Int;
   };
 
   type OldSale = {
@@ -39,102 +31,110 @@ module {
     timestamp : Int;
   };
 
-  // Old actor type
+  type OldStaff = {
+    id : Principal;
+    serialNumber : Nat;
+    name : Text;
+    role : { #manager; #operator; #attendant; #owner };
+    commissionRate : Float;
+  };
+
+  type OldShift = {
+    id : Nat;
+    staffId : Principal;
+    startTime : Int;
+    endTime : ?Int;
+    sales : List.List<OldSale>;
+  };
+
+  type OldCashCollection = {
+    id : Nat;
+    amount : Float;
+    breakdown : Text;
+    timestamp : Int;
+  };
+
+  type OldPriceUpdate = {
+    fuelType : { #petrol; #diesel };
+    newPrice : Float;
+    effectiveDate : Int;
+  };
+
   type OldActor = {
     nextSaleId : Nat;
     nextExpenseId : Nat;
     nextShiftId : Nat;
     nextCashCollectionId : Nat;
     nextServiceLogId : Nat;
-    userProfiles : Map.Map<Principal, {
-      name : Text;
-      phoneNumber : Text;
-      staffRole : ?{
-        #manager;
-        #operator;
-        #attendant;
-        #owner;
-      };
-    }>;
-    tanks : Map.Map<Text, {
-      id : Text;
-      fuelType : {
-        #petrol;
-        #diesel;
-      };
-      capacity : Float;
-      currentVolume : Float;
-      threshold : Float;
-    }>;
-    sales : Map.Map<Nat, {
-      id : Nat;
-      fuelType : {
-        #petrol;
-        #diesel;
-      };
-      quantity : Float;
-      rate : Float;
-      total : Float;
-      staffId : Principal;
-      timestamp : Int;
-    }>;
-    expenses : Map.Map<Nat, {
-      id : Nat;
-      category : {
-        #maintenance;
-        #electricity;
-        #salaries;
-        #supplies;
-      };
-      amount : Float;
-      description : Text;
-      timestamp : Int;
-    }>;
+    nextSerialNumber : Nat;
+    expenses : Map.Map<Nat, OldExpense>;
+    sales : Map.Map<Nat, OldSale>;
     staff : Map.Map<Principal, OldStaff>;
     shifts : Map.Map<Nat, OldShift>;
-    cashCollections : Map.Map<Nat, {
-      id : Nat;
-      amount : Float;
-      breakdown : Text;
-      timestamp : Int;
-    }>;
-    priceUpdates : Map.Map<{
-      #petrol;
-      #diesel;
-    }, {
-      fuelType : {
-        #petrol;
-        #diesel;
-      };
-      newPrice : Float;
-      effectiveDate : Int;
-    }>;
+    cashCollections : Map.Map<Nat, OldCashCollection>;
+    priceUpdates : Map.Map<{ #petrol; #diesel }, OldPriceUpdate>;
   };
 
-  // New Staff Type with serial number.
+  // New types
+  type NewExpense = {
+    id : Nat;
+    category : {
+      #maintenance;
+      #electricity;
+      #salaries;
+      #supplies;
+    };
+    amount : Float;
+    description : Text;
+    timestamp : Int;
+  };
+
+  type NewSale = {
+    id : Nat;
+    fuelType : {
+      #petrol;
+      #diesel;
+    };
+    quantity : Float;
+    rate : Float;
+    total : Float;
+    openTotalizer : Float;
+    endTotalizer : Float;
+    staffId : Principal;
+    timestamp : Int;
+    saleDate : Int;
+  };
+
   type NewStaff = {
     id : Principal;
     serialNumber : Nat;
     name : Text;
-    role : {
-      #manager;
-      #operator;
-      #attendant;
-      #owner;
-    };
+    role : { #manager; #operator; #attendant; #owner };
     commissionRate : Float;
   };
 
-  // New Shift Type with sales as List
   type NewShift = {
     id : Nat;
     staffId : Principal;
     startTime : Int;
     endTime : ?Int;
-    sales : List.List<OldSale>; // Use List for compatibility
+    sales : List.List<NewSale>;
+    shiftDate : Int;
   };
 
-  // New actor type
+  type NewCashCollection = {
+    id : Nat;
+    amount : Float;
+    breakdown : Text;
+    timestamp : Int;
+  };
+
+  type NewPriceUpdate = {
+    fuelType : { #petrol; #diesel };
+    newPrice : Float;
+    effectiveDate : Int;
+  };
+
   type NewActor = {
     nextSaleId : Nat;
     nextExpenseId : Nat;
@@ -142,85 +142,52 @@ module {
     nextCashCollectionId : Nat;
     nextServiceLogId : Nat;
     nextSerialNumber : Nat;
-    userProfiles : Map.Map<Principal, {
-      name : Text;
-      phoneNumber : Text;
-      staffRole : ?{
-        #manager;
-        #operator;
-        #attendant;
-        #owner;
-      };
-    }>;
-    tanks : Map.Map<Text, {
-      id : Text;
-      fuelType : {
-        #petrol;
-        #diesel;
-      };
-      capacity : Float;
-      currentVolume : Float;
-      threshold : Float;
-    }>;
-    sales : Map.Map<Nat, {
-      id : Nat;
-      fuelType : {
-        #petrol;
-        #diesel;
-      };
-      quantity : Float;
-      rate : Float;
-      total : Float;
-      staffId : Principal;
-      timestamp : Int;
-    }>;
-    expenses : Map.Map<Nat, {
-      id : Nat;
-      category : {
-        #maintenance;
-        #electricity;
-        #salaries;
-        #supplies;
-      };
-      amount : Float;
-      description : Text;
-      timestamp : Int;
-    }>;
+    expenses : Map.Map<Nat, NewExpense>;
+    sales : Map.Map<Nat, NewSale>;
     staff : Map.Map<Principal, NewStaff>;
     shifts : Map.Map<Nat, NewShift>;
-    cashCollections : Map.Map<Nat, {
-      id : Nat;
-      amount : Float;
-      breakdown : Text;
-      timestamp : Int;
-    }>;
-    priceUpdates : Map.Map<{
-      #petrol;
-      #diesel;
-    }, {
-      fuelType : {
-        #petrol;
-        #diesel;
-      };
-      newPrice : Float;
-      effectiveDate : Int;
-    }>;
+    cashCollections : Map.Map<Nat, NewCashCollection>;
+    priceUpdates : Map.Map<{ #petrol; #diesel }, NewPriceUpdate>;
   };
 
-  // Migration function called by the main actor via the with-clause
-  public func run(old : OldActor) : NewActor {
-    let newStaff = old.staff.map<Principal, OldStaff, NewStaff>(
-      func(_id, oldStaff) {
-        {
-          oldStaff with
-          serialNumber = 0; // Default old data with serial number at 0.
-        };
-      },
+  func convertOldSaleToNew(oldSale : OldSale) : NewSale {
+    {
+      oldSale with
+      openTotalizer = 0.0;
+      endTotalizer = 0.0;
+      saleDate = oldSale.timestamp;
+    };
+  };
+
+  func convertOldSalesListToNew(oldSales : List.List<OldSale>) : List.List<NewSale> {
+    oldSales.map<OldSale, NewSale>(
+      func(oldSale) {
+        convertOldSaleToNew(oldSale);
+      }
     );
+  };
+
+  public func run(old : OldActor) : NewActor {
     {
       old with
-      staff = newStaff;
-      nextSerialNumber = 1;
+      expenses = old.expenses;
+      sales = old.sales.map<Nat, OldSale, NewSale>(
+        func(_id, sale) {
+          convertOldSaleToNew(sale);
+        }
+      );
+      staff = old.staff;
+      shifts = old.shifts.map<Nat, OldShift, NewShift>(
+        func(_id, shift) {
+          {
+            shift with
+            sales = convertOldSalesListToNew(shift.sales);
+            shiftDate = shift.startTime;
+          };
+        }
+      );
+      cashCollections = old.cashCollections;
+      priceUpdates = old.priceUpdates;
     };
   };
 };

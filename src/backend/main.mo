@@ -59,8 +59,11 @@ actor {
     quantity : Float;
     rate : Float;
     total : Float;
+    openTotalizer : Float;
+    endTotalizer : Float;
     staffId : Principal;
     timestamp : Int;
+    saleDate : Int;
   };
 
   public type ExpenseCategory = {
@@ -92,6 +95,7 @@ actor {
     startTime : Int;
     endTime : ?Int;
     sales : List.List<Sale>;
+    shiftDate : Int;
   };
 
   public type ShiftView = {
@@ -100,6 +104,7 @@ actor {
     startTime : Int;
     endTime : ?Int;
     sales : [Sale];
+    shiftDate : Int;
   };
 
   public type CashCollection = {
@@ -232,7 +237,7 @@ actor {
   };
 
   // Sales Management
-  public shared ({ caller }) func recordSale(fuelType : FuelType, quantity : Float, rate : Float, staffId : Principal) : async () {
+  public shared ({ caller }) func recordSale(fuelType : FuelType, quantity : Float, rate : Float, openTotalizer : Float, endTotalizer : Float, saleDate : Int, staffId : Principal) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can record sales");
     };
@@ -255,8 +260,11 @@ actor {
       quantity;
       rate;
       total;
+      openTotalizer;
+      endTotalizer;
       staffId;
       timestamp = Time.now();
+      saleDate;
     };
     sales.add(nextSaleId, sale);
     nextSaleId += 1;
@@ -403,7 +411,7 @@ actor {
   };
 
   // Shift Management
-  public shared ({ caller }) func startShift(staffId : Principal) : async Nat {
+  public shared ({ caller }) func startShift(staffId : Principal, shiftDate : Int) : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start shifts");
     };
@@ -425,6 +433,7 @@ actor {
       startTime = Time.now();
       endTime = null;
       sales = List.empty<Sale>();
+      shiftDate;
     };
     shifts.add(nextShiftId, shift);
     let shiftId = nextShiftId;
@@ -461,6 +470,7 @@ actor {
         startTime = shift.startTime;
         endTime = shift.endTime;
         sales = shift.sales.toArray();
+        shiftDate = shift.shiftDate;
       };
       shiftViews.add(shiftView);
     };
@@ -559,3 +569,4 @@ actor {
     };
   };
 };
+

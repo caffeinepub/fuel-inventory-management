@@ -111,9 +111,12 @@ export interface Sale {
     total: number;
     staffId: Principal;
     rate: number;
+    endTotalizer: number;
+    openTotalizer: number;
     fuelType: FuelType;
     timestamp: bigint;
     quantity: number;
+    saleDate: bigint;
 }
 export interface Expense {
     id: bigint;
@@ -181,6 +184,7 @@ export interface ShiftView {
     staffId: Principal;
     endTime?: bigint;
     sales: Array<Sale>;
+    shiftDate: bigint;
 }
 export interface UserProfile {
     staffRole?: StaffRole;
@@ -232,11 +236,11 @@ export interface backendInterface {
     isStripeConfigured(): Promise<boolean>;
     recordCashCollection(amount: number, breakdown: string): Promise<void>;
     recordExpense(category: ExpenseCategory, amount: number, description: string): Promise<void>;
-    recordSale(fuelType: FuelType, quantity: number, rate: number, staffId: Principal): Promise<void>;
+    recordSale(fuelType: FuelType, quantity: number, rate: number, openTotalizer: number, endTotalizer: number, saleDate: bigint, staffId: Principal): Promise<void>;
     removeStaff(staffId: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
-    startShift(staffId: Principal): Promise<bigint>;
+    startShift(staffId: Principal, shiftDate: bigint): Promise<bigint>;
     syncOfflineData(offlineData: OfflineData): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updatePrice(fuelType: FuelType, newPrice: number): Promise<void>;
@@ -574,17 +578,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async recordSale(arg0: FuelType, arg1: number, arg2: number, arg3: Principal): Promise<void> {
+    async recordSale(arg0: FuelType, arg1: number, arg2: number, arg3: number, arg4: number, arg5: bigint, arg6: Principal): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.recordSale(to_candid_FuelType_n5(this._uploadFile, this._downloadFile, arg0), arg1, arg2, arg3);
+                const result = await this.actor.recordSale(to_candid_FuelType_n5(this._uploadFile, this._downloadFile, arg0), arg1, arg2, arg3, arg4, arg5, arg6);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.recordSale(to_candid_FuelType_n5(this._uploadFile, this._downloadFile, arg0), arg1, arg2, arg3);
+            const result = await this.actor.recordSale(to_candid_FuelType_n5(this._uploadFile, this._downloadFile, arg0), arg1, arg2, arg3, arg4, arg5, arg6);
             return result;
         }
     }
@@ -630,17 +634,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async startShift(arg0: Principal): Promise<bigint> {
+    async startShift(arg0: Principal, arg1: bigint): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.startShift(arg0);
+                const result = await this.actor.startShift(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.startShift(arg0);
+            const result = await this.actor.startShift(arg0, arg1);
             return result;
         }
     }
@@ -819,26 +823,35 @@ function from_candid_record_n31(_uploadFile: (file: ExternalBlob) => Promise<Uin
     total: number;
     staffId: Principal;
     rate: number;
+    endTotalizer: number;
+    openTotalizer: number;
     fuelType: _FuelType;
     timestamp: bigint;
     quantity: number;
+    saleDate: bigint;
 }): {
     id: bigint;
     total: number;
     staffId: Principal;
     rate: number;
+    endTotalizer: number;
+    openTotalizer: number;
     fuelType: FuelType;
     timestamp: bigint;
     quantity: number;
+    saleDate: bigint;
 } {
     return {
         id: value.id,
         total: value.total,
         staffId: value.staffId,
         rate: value.rate,
+        endTotalizer: value.endTotalizer,
+        openTotalizer: value.openTotalizer,
         fuelType: from_candid_FuelType_n19(_uploadFile, _downloadFile, value.fuelType),
         timestamp: value.timestamp,
-        quantity: value.quantity
+        quantity: value.quantity,
+        saleDate: value.saleDate
     };
 }
 function from_candid_record_n34(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
@@ -847,19 +860,22 @@ function from_candid_record_n34(_uploadFile: (file: ExternalBlob) => Promise<Uin
     staffId: Principal;
     endTime: [] | [bigint];
     sales: Array<_Sale>;
+    shiftDate: bigint;
 }): {
     id: bigint;
     startTime: bigint;
     staffId: Principal;
     endTime?: bigint;
     sales: Array<Sale>;
+    shiftDate: bigint;
 } {
     return {
         id: value.id,
         startTime: value.startTime,
         staffId: value.staffId,
         endTime: record_opt_to_undefined(from_candid_opt_n35(_uploadFile, _downloadFile, value.endTime)),
-        sales: from_candid_vec_n29(_uploadFile, _downloadFile, value.sales)
+        sales: from_candid_vec_n29(_uploadFile, _downloadFile, value.sales),
+        shiftDate: value.shiftDate
     };
 }
 function from_candid_record_n38(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
@@ -1114,26 +1130,35 @@ function to_candid_record_n57(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     total: number;
     staffId: Principal;
     rate: number;
+    endTotalizer: number;
+    openTotalizer: number;
     fuelType: FuelType;
     timestamp: bigint;
     quantity: number;
+    saleDate: bigint;
 }): {
     id: bigint;
     total: number;
     staffId: Principal;
     rate: number;
+    endTotalizer: number;
+    openTotalizer: number;
     fuelType: _FuelType;
     timestamp: bigint;
     quantity: number;
+    saleDate: bigint;
 } {
     return {
         id: value.id,
         total: value.total,
         staffId: value.staffId,
         rate: value.rate,
+        endTotalizer: value.endTotalizer,
+        openTotalizer: value.openTotalizer,
         fuelType: to_candid_FuelType_n5(_uploadFile, _downloadFile, value.fuelType),
         timestamp: value.timestamp,
-        quantity: value.quantity
+        quantity: value.quantity,
+        saleDate: value.saleDate
     };
 }
 function to_candid_record_n59(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {

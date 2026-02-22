@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add auto-incrementing serial numbers to staff management.
+**Goal:** Add date selection and totalizer tracking to sales entries and shift management for backdated record-keeping.
 
 **Planned changes:**
-- Add serial number field to staff data model that auto-increments for each new staff member
-- Display serial number column in the staff management table
-- Automatically assign serial numbers when adding new staff members without manual input
+- Add date picker to the new sale form for entering custom dates on backdated sales
+- Add open totalizer and end totalizer numeric input fields to the sales form
+- Automatically calculate and display volume dispensed (end totalizer - open totalizer) in liters
+- Store totalizer readings and custom dates with each sale record in the backend
+- Add start date and time picker fields to the Start New Shift dialog for backdated shifts
 
-**User-visible outcome:** Each staff member will have a unique serial number displayed in the staff table, automatically assigned in sequential order when new staff are added.
+**User-visible outcome:** Users can create sales entries and start shifts with custom dates for historical record-keeping, and track fuel dispensed through totalizer readings with automatic volume calculations.

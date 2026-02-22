@@ -1,37 +1,70 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add serial number field to staff management",
+  "title": "Add date selection and totalizer tracking for sales and shifts",
   "requirements": [
     {
-      "id": "REQ-3",
-      "summary": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
+      "id": "REQ-1",
+      "summary": "Add a date picker field to the new sale form to allow entering or selecting a custom date for backdated sales entries",
       "acceptanceCriteria": [
-        "Serial number column is visible in the staff table",
-        "Serial numbers are displayed in ascending order",
-        "The column appears before or after the name column for easy reference"
+        "Date picker component is added to the SalesForm component",
+        "Selected date is captured and stored with each sale record",
+        "Date defaults to current date/time if not explicitly changed"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/StaffManagement.tsx",
+          "path": "frontend/src/components/SalesForm.tsx",
           "operation": "modify",
-          "description": "Add a serial number column to the staff table display. Insert the column as the first column before the name field. Retrieve the serialNumber field from the Staff type (defined in backend.d.ts as bigint). Display serial numbers in ascending order by sorting staff members by their serialNumber field. Ensure the column header is labeled 'Serial No.' or 'S/N' for clarity. Verify the component's usage of the backend interface before implementing."
+          "description": "Add a date-time picker input field using shadcn/ui components (Popover + Calendar + Input for time). Store the selected date in component state and pass it to the recordSale backend function as the saleDate parameter (convert to bigint nanoseconds). Default the picker to the current date/time. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-4",
-      "summary": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
+      "id": "REQ-2",
+      "summary": "Add open totalizer and end totalizer numeric input fields to the new sale form",
       "acceptanceCriteria": [
-        "The add staff form does not show a serial number input field",
-        "Serial numbers are assigned automatically by the backend",
-        "New staff members receive sequential serial numbers"
+        "Two numeric input fields added to SalesForm: 'Open Totalizer' and 'End Totalizer'",
+        "Fields accept decimal values representing totalizer readings",
+        "Both fields are clearly labeled in the form"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/StaffManagement.tsx",
+          "path": "frontend/src/components/SalesForm.tsx",
           "operation": "modify",
-          "description": "Remove any serial number input field from the add staff form if present. Ensure the form only collects name, Principal ID, role, and commission rate. The backend's addStaffMember method (defined in backend.d.ts) will automatically assign serial numbers, so no frontend changes are needed for serial number assignment logic. Update any form validation or submission logic to exclude serial number handling. Verify the component's usage of the backend interface before implementing."
+          "description": "Add two numeric input fields labeled 'Open Totalizer' and 'End Totalizer' using shadcn/ui Input components with type='number' and step='0.01'. Store values in component state (openTotalizer and endTotalizer). Pass these values to the recordSale backend function. Ensure fields are clearly labeled and positioned logically in the form layout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Automatically calculate and display the volume of petrol or diesel dispensed based on the difference between end totalizer and open totalizer readings",
+      "acceptanceCriteria": [
+        "Calculated volume is displayed in real-time as (End Totalizer - Open Totalizer)",
+        "Calculation updates automatically when either totalizer value changes",
+        "Volume is displayed with appropriate units (liters)",
+        "Validation ensures end totalizer is greater than or equal to open totalizer"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SalesForm.tsx",
+          "operation": "modify",
+          "description": "Add a calculated volume display that shows (endTotalizer - openTotalizer) in real-time. Use useEffect or derived state to recalculate when either totalizer value changes. Display the result with 'liters' unit label. Add validation to show an error message if endTotalizer < openTotalizer. Disable form submission when validation fails. Position the calculated volume display prominently near the totalizer fields."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add start shift date and time picker fields to the Start New Shift dialog",
+      "acceptanceCriteria": [
+        "Date and time picker component is added to the shift start dialog in ShiftManagement component",
+        "Selected date/time is captured when starting a new shift",
+        "Date/time defaults to current date/time if not explicitly changed"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ShiftManagement.tsx",
+          "operation": "modify",
+          "description": "Add a date-time picker input field to the Start New Shift dialog using shadcn/ui components (Popover + Calendar + Input for time). Store the selected date in component state and pass it to the startShift backend function as the shiftDate parameter (convert to bigint nanoseconds). Default the picker to the current date/time. Position the date-time picker prominently in the shift start dialog above the staff selection dropdown. Verify the component's usage instructions before implementing."
         }
       ]
     }

@@ -29,9 +29,12 @@ export interface Sale {
     total: number;
     staffId: Principal;
     rate: number;
+    endTotalizer: number;
+    openTotalizer: number;
     fuelType: FuelType;
     timestamp: bigint;
     quantity: number;
+    saleDate: bigint;
 }
 export interface Expense {
     id: bigint;
@@ -99,6 +102,7 @@ export interface ShiftView {
     staffId: Principal;
     endTime?: bigint;
     sales: Array<Sale>;
+    shiftDate: bigint;
 }
 export interface UserProfile {
     staffRole?: StaffRole;
@@ -149,11 +153,11 @@ export interface backendInterface {
     isStripeConfigured(): Promise<boolean>;
     recordCashCollection(amount: number, breakdown: string): Promise<void>;
     recordExpense(category: ExpenseCategory, amount: number, description: string): Promise<void>;
-    recordSale(fuelType: FuelType, quantity: number, rate: number, staffId: Principal): Promise<void>;
+    recordSale(fuelType: FuelType, quantity: number, rate: number, openTotalizer: number, endTotalizer: number, saleDate: bigint, staffId: Principal): Promise<void>;
     removeStaff(staffId: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
-    startShift(staffId: Principal): Promise<bigint>;
+    startShift(staffId: Principal, shiftDate: bigint): Promise<bigint>;
     syncOfflineData(offlineData: OfflineData): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updatePrice(fuelType: FuelType, newPrice: number): Promise<void>;

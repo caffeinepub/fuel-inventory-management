@@ -71,9 +71,12 @@ export const Sale = IDL.Record({
   'total' : IDL.Float64,
   'staffId' : IDL.Principal,
   'rate' : IDL.Float64,
+  'endTotalizer' : IDL.Float64,
+  'openTotalizer' : IDL.Float64,
   'fuelType' : FuelType,
   'timestamp' : IDL.Int,
   'quantity' : IDL.Float64,
+  'saleDate' : IDL.Int,
 });
 export const ShiftView = IDL.Record({
   'id' : IDL.Nat,
@@ -81,6 +84,7 @@ export const ShiftView = IDL.Record({
   'staffId' : IDL.Principal,
   'endTime' : IDL.Opt(IDL.Int),
   'sales' : IDL.Vec(Sale),
+  'shiftDate' : IDL.Int,
 });
 export const Staff = IDL.Record({
   'id' : IDL.Principal,
@@ -168,14 +172,22 @@ export const idlService = IDL.Service({
   'recordCashCollection' : IDL.Func([IDL.Float64, IDL.Text], [], []),
   'recordExpense' : IDL.Func([ExpenseCategory, IDL.Float64, IDL.Text], [], []),
   'recordSale' : IDL.Func(
-      [FuelType, IDL.Float64, IDL.Float64, IDL.Principal],
+      [
+        FuelType,
+        IDL.Float64,
+        IDL.Float64,
+        IDL.Float64,
+        IDL.Float64,
+        IDL.Int,
+        IDL.Principal,
+      ],
       [],
       [],
     ),
   'removeStaff' : IDL.Func([IDL.Principal], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
-  'startShift' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+  'startShift' : IDL.Func([IDL.Principal, IDL.Int], [IDL.Nat], []),
   'syncOfflineData' : IDL.Func([OfflineData], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
@@ -250,9 +262,12 @@ export const idlFactory = ({ IDL }) => {
     'total' : IDL.Float64,
     'staffId' : IDL.Principal,
     'rate' : IDL.Float64,
+    'endTotalizer' : IDL.Float64,
+    'openTotalizer' : IDL.Float64,
     'fuelType' : FuelType,
     'timestamp' : IDL.Int,
     'quantity' : IDL.Float64,
+    'saleDate' : IDL.Int,
   });
   const ShiftView = IDL.Record({
     'id' : IDL.Nat,
@@ -260,6 +275,7 @@ export const idlFactory = ({ IDL }) => {
     'staffId' : IDL.Principal,
     'endTime' : IDL.Opt(IDL.Int),
     'sales' : IDL.Vec(Sale),
+    'shiftDate' : IDL.Int,
   });
   const Staff = IDL.Record({
     'id' : IDL.Principal,
@@ -348,14 +364,22 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'recordSale' : IDL.Func(
-        [FuelType, IDL.Float64, IDL.Float64, IDL.Principal],
+        [
+          FuelType,
+          IDL.Float64,
+          IDL.Float64,
+          IDL.Float64,
+          IDL.Float64,
+          IDL.Int,
+          IDL.Principal,
+        ],
         [],
         [],
       ),
     'removeStaff' : IDL.Func([IDL.Principal], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
-    'startShift' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+    'startShift' : IDL.Func([IDL.Principal, IDL.Int], [IDL.Nat], []),
     'syncOfflineData' : IDL.Func([OfflineData], [], []),
     'transform' : IDL.Func(
         [TransformationInput],

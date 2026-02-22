@@ -2,10 +2,52 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-display-the-serial-number-column-in-the-staff-management-table-showing-each-staff-member-s-assigned-serial-number",
-      "featureTitle": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
+      "featureId": "feature-add-a-date-picker-field-to-the-new-sale-form-to-allow-entering-or-selecting-a-custom-date-for-backdated-sales-entries",
+      "featureTitle": "Add a date picker field to the new sale form to allow entering or selecting a custom date for backdated sales entries",
       "files": [
-        "frontend/src/components/StaffManagement.tsx"
+        "frontend/src/components/SalesForm.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-open-totalizer-and-end-totalizer-numeric-input-fields-to-the-new-sale-form",
+      "featureTitle": "Add open totalizer and end totalizer numeric input fields to the new sale form",
+      "files": [
+        "frontend/src/components/SalesForm.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-automatically-calculate-and-display-the-volume-of-petrol-or-diesel-dispensed-based-on-the-difference-between-end-totalizer-and-open-totalizer-readings",
+      "featureTitle": "Automatically calculate and display the volume of petrol or diesel dispensed based on the difference between end totalizer and open totalizer readings",
+      "files": [
+        "frontend/src/components/SalesForm.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -23,10 +65,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-when-adding-a-new-staff-member-automatically-assign-the-next-available-serial-number-without-requiring-manual-input",
-      "featureTitle": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
+      "featureId": "feature-add-start-shift-date-and-time-picker-fields-to-the-start-new-shift-dialog",
+      "featureTitle": "Add start shift date and time picker fields to the Start New Shift dialog",
       "files": [
-        "frontend/src/components/StaffManagement.tsx"
+        "frontend/src/components/ShiftManagement.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -39,7 +81,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-4"
+        "REQ-5"
       ],
       "confidence": "high"
     }

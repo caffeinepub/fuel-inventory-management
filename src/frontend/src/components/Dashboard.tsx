@@ -1,6 +1,7 @@
 import { useGetTanks, useGetShifts, useGetSales } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Fuel, AlertTriangle, DollarSign, Clock } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Fuel, AlertTriangle, DollarSign, Clock, Smartphone, ExternalLink } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
 export default function Dashboard() {
@@ -22,6 +23,40 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground mt-1">Welcome to your fuel station management system</p>
       </div>
+
+      {/* APK Information Banner */}
+      <Alert>
+        <Smartphone className="h-4 w-4" />
+        <AlertTitle>Mobile App (APK) Generation</AlertTitle>
+        <AlertDescription className="mt-2 space-y-2">
+          <p>
+            This is a web application. To create an Android APK, you'll need to use additional build tools like{' '}
+            <a 
+              href="https://capacitorjs.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-medium underline inline-flex items-center gap-1 hover:text-primary"
+            >
+              Capacitor
+              <ExternalLink className="h-3 w-3" />
+            </a>
+            {' '}or{' '}
+            <a 
+              href="https://cordova.apache.org/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-medium underline inline-flex items-center gap-1 hover:text-primary"
+            >
+              Cordova
+              <ExternalLink className="h-3 w-3" />
+            </a>
+            .
+          </p>
+          <p className="text-sm">
+            These tools wrap your React web app into a native Android application. Visit the links above for setup guides and documentation.
+          </p>
+        </AlertDescription>
+      </Alert>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link to="/alerts">

@@ -6,9 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Play, Square } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Clock, Play, Square, Calendar as CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { Principal } from '@dfinity/principal';
+import { format } from 'date-fns';
 
 export default function ShiftManagement() {
   const { identity } = useInternetIdentity();
@@ -18,6 +22,9 @@ export default function ShiftManagement() {
   const endShift = useEndShift();
 
   const [selectedStaffId, setSelectedStaffId] = useState('');
+  const [shiftDate, setShiftDate] = useState<Date>(new Date());
+  const [shiftTime, setShiftTime] = useState<string>(format(new Date(), 'HH:mm'));
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const activeShift = shifts.find((s) => !s.endTime);
 
@@ -29,9 +36,19 @@ export default function ShiftManagement() {
 
     try {
       const staffId = Principal.fromText(selectedStaffId);
-      await startShift.mutateAsync(staffId);
+      
+      // Combine date and time
+      const [hours, minutes] = shiftTime.split(':').map(Number);
+      const combinedDateTime = new Date(shiftDate);
+      combinedDateTime.setHours(hours, minutes, 0, 0);
+      const shiftDateNanos = BigInt(combinedDateTime.getTime() * 1_000_000);
+
+      await startShift.mutateAsync({ staffId, shiftDate: shiftDateNanos });
       toast.success('Shift started successfully');
       setSelectedStaffId('');
+      // Reset to current date/time after successful shift start
+      setShiftDate(new Date());
+      setShiftTime(format(new Date(), 'HH:mm'));
     } catch (error) {
       toast.error('Failed to start shift');
     }
@@ -92,6 +109,10 @@ export default function ShiftManagement() {
                       <span className="font-medium">{formatTimestamp(activeShift.startTime)}</span>
                     </div>
                     <div className="flex justify-between">
+                      <span className="text-muted-foreground">Shift Date:</span>
+                      <span className="font-medium">{formatTimestamp(activeShift.shiftDate)}</span>
+                    </div>
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Sales:</span>
                       <span className="font-medium">{activeShift.sales.length} transactions</span>
                     </div>
@@ -119,6 +140,42 @@ export default function ShiftManagement() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              <div>
+                <Label htmlFor="shiftDateTime">Shift Start Date & Time</Label>
+                <div className="flex gap-2 mt-1">
+                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="flex-1 justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(shiftDate, 'PPP')}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={shiftDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setShiftDate(date);
+                            setIsCalendarOpen(false);
+                          }
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Input
+                    type="time"
+                    value={shiftTime}
+                    onChange={(e) => setShiftTime(e.target.value)}
+                    className="w-32"
+                  />
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="staff">Select Staff Member</Label>
                 <Select value={selectedStaffId} onValueChange={setSelectedStaffId}>
@@ -170,6 +227,10 @@ export default function ShiftManagement() {
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Shift Date</p>
+                    <p className="font-medium">{formatTimestamp(shift.shiftDate)}</p>
+                  </div>
                   <div>
                     <p className="text-muted-foreground">Started</p>
                     <p className="font-medium">{formatTimestamp(shift.startTime)}</p>

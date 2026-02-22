@@ -1,42 +1,64 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T16:20:28.031Z",
+  "generatedAt": "2026-02-22T17:26:31.052Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
+        "id": "REQ-1",
+        "summary": "Add a date picker field to the new sale form to allow entering or selecting a custom date for backdated sales entries",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/SalesForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/SalesForm.tsx"
+        ]
+      },
+      {
         "id": "REQ-2",
-        "summary": "Add a serial number field to the staff data model in the backend that auto-increments for each new staff member added",
+        "summary": "Add open totalizer and end totalizer numeric input fields to the new sale form",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/SalesForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/SalesForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Automatically calculate and display the volume of petrol or diesel dispensed based on the difference between end totalizer and open totalizer readings",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/SalesForm.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/SalesForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Store open totalizer and end totalizer readings with each sale record in the backend",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-3",
-        "summary": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
+        "id": "REQ-5",
+        "summary": "Add start shift date and time picker fields to the Start New Shift dialog",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/StaffManagement.tsx"
+          "frontend/src/components/ShiftManagement.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/StaffManagement.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/StaffManagement.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/StaffManagement.tsx"
+          "frontend/src/components/ShiftManagement.tsx"
         ]
       }
     ]
@@ -50,7 +72,8 @@
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/StaffManagement.tsx",
+    "frontend/src/components/SalesForm.tsx",
+    "frontend/src/components/ShiftManagement.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",

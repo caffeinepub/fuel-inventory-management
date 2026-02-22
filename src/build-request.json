@@ -1,73 +1,113 @@
 {
   "kind": "build_request",
-  "title": "Add serial number field to staff management",
+  "title": "Add date selection and totalizer tracking for sales and shifts",
   "projectName": "Fuel Station Manager",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-2",
-      "text": "Add a serial number field to the staff data model in the backend that auto-increments for each new staff member added",
-      "target": "backend",
+      "id": "REQ-1",
+      "text": "Add a date picker field to the new sale form to allow entering or selecting a custom date for backdated sales entries",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-last"
         ],
         "quotes": [
-          "add serial number"
+          "In the new sale option, there should be an option to enter or select a date for making old entries"
         ]
       },
       "acceptanceCriteria": [
-        "Staff records include a unique serial number field",
-        "Serial numbers auto-increment starting from 1",
-        "Serial numbers persist across canister upgrades"
+        "Date picker component is added to the SalesForm component",
+        "Selected date is captured and stored with each sale record",
+        "Date defaults to current date/time if not explicitly changed",
+        "Backend Sale type includes optional timestamp field for custom dates"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add open totalizer and end totalizer numeric input fields to the new sale form",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "there should also be an option for open totalizer and end totalizer"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Two numeric input fields added to SalesForm: 'Open Totalizer' and 'End Totalizer'",
+        "Fields accept decimal values representing totalizer readings",
+        "Both fields are clearly labeled in the form"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
+      "text": "Automatically calculate and display the volume of petrol or diesel dispensed based on the difference between end totalizer and open totalizer readings",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-last"
         ],
         "quotes": [
-          "add serial number"
+          "It should calculate and tell you how many liters of petrol and diesel are there"
         ]
       },
       "acceptanceCriteria": [
-        "Serial number column is visible in the staff table",
-        "Serial numbers are displayed in ascending order",
-        "The column appears before or after the name column for easy reference"
+        "Calculated volume is displayed in real-time as (End Totalizer - Open Totalizer)",
+        "Calculation updates automatically when either totalizer value changes",
+        "Volume is displayed with appropriate units (liters)",
+        "Validation ensures end totalizer is greater than or equal to open totalizer"
       ]
     },
     {
       "id": "REQ-4",
-      "text": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
-      "target": "both",
+      "text": "Store open totalizer and end totalizer readings with each sale record in the backend",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-last"
         ],
         "quotes": [
-          "add a new member"
+          "there should also be an option for open totalizer and end totalizer"
         ]
       },
       "acceptanceCriteria": [
-        "The add staff form does not show a serial number input field",
-        "Serial numbers are assigned automatically by the backend",
-        "New staff members receive sequential serial numbers"
+        "Sale record type in backend includes optional openTotalizer and endTotalizer fields",
+        "Totalizer values are persisted when creating new sales",
+        "Totalizer data is retrievable when querying sales records"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add start shift date and time picker fields to the Start New Shift dialog",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "The Start New Shift option should include the Start Shift Date and Time to help with old entries"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Date and time picker component is added to the shift start dialog in ShiftManagement component",
+        "Selected date/time is captured when starting a new shift",
+        "Date/time defaults to current date/time if not explicitly changed",
+        "Backend Shift type supports custom start timestamp for backdated shifts"
       ]
     }
   ],
   "constraints": [
-    "Do not modify immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Maintain single-actor architecture in backend/main.mo",
-    "Preserve existing staff management functionality including role assignment and commission rates"
+    "Maintain existing offline support functionality for sales entries",
+    "Preserve current shift management and staff assignment logic",
+    "Ensure totalizer calculations work for both petrol and diesel fuel types"
   ],
   "nonGoals": [
-    "Manually editable serial numbers",
-    "Reusing serial numbers from deleted staff members",
-    "Re-adding Principal ID field"
+    "Modifying existing sale records or shift records",
+    "Adding totalizer tracking to other components beyond new sales",
+    "Implementing automatic totalizer synchronization with physical pump hardware",
+    "Adding date selection to expense entries or other modules"
   ],
   "imageRequirements": {
     "required": [],

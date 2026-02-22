@@ -43,9 +43,12 @@ export interface Sale {
   'total' : number,
   'staffId' : Principal,
   'rate' : number,
+  'endTotalizer' : number,
+  'openTotalizer' : number,
   'fuelType' : FuelType,
   'timestamp' : bigint,
   'quantity' : number,
+  'saleDate' : bigint,
 }
 export interface ShiftView {
   'id' : bigint,
@@ -53,6 +56,7 @@ export interface ShiftView {
   'staffId' : Principal,
   'endTime' : [] | [bigint],
   'sales' : Array<Sale>,
+  'shiftDate' : bigint,
 }
 export interface ShoppingItem {
   'productName' : string,
@@ -140,11 +144,14 @@ export interface _SERVICE {
   'isStripeConfigured' : ActorMethod<[], boolean>,
   'recordCashCollection' : ActorMethod<[number, string], undefined>,
   'recordExpense' : ActorMethod<[ExpenseCategory, number, string], undefined>,
-  'recordSale' : ActorMethod<[FuelType, number, number, Principal], undefined>,
+  'recordSale' : ActorMethod<
+    [FuelType, number, number, number, number, bigint, Principal],
+    undefined
+  >,
   'removeStaff' : ActorMethod<[Principal], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
-  'startShift' : ActorMethod<[Principal], bigint>,
+  'startShift' : ActorMethod<[Principal, bigint], bigint>,
   'syncOfflineData' : ActorMethod<[OfflineData], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updatePrice' : ActorMethod<[FuelType, number], undefined>,

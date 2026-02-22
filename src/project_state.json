@@ -1,26 +1,44 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project for managing members with serial numbers instead of Principal IDs",
+  "summary": "Petrol pump management system with sales tracking, shift management, and staff administration",
   "architectural_notes": [
-    "Members identified by serial numbers instead of Internet Identity Principal IDs"
+    "Sales entries support backdating with custom date selection",
+    "Totalizer-based fuel volume calculation for petrol and diesel",
+    "Shift management includes timestamp tracking for historical data"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-display-the-serial-number-column-in-the-staff-management-table-showing-each-staff-member-s-assigned-serial-number",
-      "title": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
+      "id": "feature-add-a-date-picker-field-to-the-new-sale-form-to-allow-entering-or-selecting-a-custom-date-for-backdated-sales-entries",
+      "title": "Add a date picker field to the new sale form to allow entering or selecting a custom date for backdated sales entries",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-open-totalizer-and-end-totalizer-numeric-input-fields-to-the-new-sale-form",
+      "title": "Add open totalizer and end totalizer numeric input fields to the new sale form",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-automatically-calculate-and-display-the-volume-of-petrol-or-diesel-dispensed-based-on-the-difference-between-end-totalizer-and-open-totalizer-readings",
+      "title": "Automatically calculate and display the volume of petrol or diesel dispensed based on the difference between end totalizer and open totalizer readings",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-when-adding-a-new-staff-member-automatically-assign-the-next-available-serial-number-without-requiring-manual-input",
-      "title": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
+      "id": "feature-add-start-shift-date-and-time-picker-fields-to-the-start-new-shift-dialog",
+      "title": "Add start shift date and time picker fields to the Start New Shift dialog",
       "reqIds": [
-        "REQ-4"
+        "REQ-5"
       ],
       "version": 1
     }
@@ -28,15 +46,27 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add serial number field for new members",
+      "summary": "Add date selection for backdated sales entries in new sale option",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Add a serial number field to the staff data model in the backend that auto-increments for each new staff member added",
+      "summary": "Add open and end totalizer fields in sales that calculate fuel volume difference",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add start shift date and time fields to Start New Shift option for backdated entries",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Store open totalizer and end totalizer readings with each sale record in the backend",
       "reqIds": [
-        "REQ-2"
+        "REQ-4"
       ],
       "status": "pending"
     }

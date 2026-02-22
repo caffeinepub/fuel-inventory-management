@@ -55,13 +55,14 @@ export default function StaffManagement() {
   };
 
   const handleAddStaff = async () => {
-    if (!staffId || !name || !commissionRate) {
-      toast.error('Please fill all fields');
+    if (!name || !commissionRate) {
+      toast.error('Please fill all required fields');
       return;
     }
 
-    if (!principalIdValid) {
-      toast.error('Please enter a valid Principal ID');
+    // If Principal ID is provided, validate it
+    if (staffId && !principalIdValid) {
+      toast.error('Please enter a valid Principal ID or leave it empty');
       return;
     }
 
@@ -72,7 +73,11 @@ export default function StaffManagement() {
     }
 
     try {
-      const principal = Principal.fromText(staffId);
+      // Use provided Principal ID or generate a random one
+      const principal = staffId 
+        ? Principal.fromText(staffId)
+        : Principal.fromUint8Array(crypto.getRandomValues(new Uint8Array(29)));
+      
       await addStaff.mutateAsync({
         id: principal,
         name,
@@ -230,18 +235,18 @@ export default function StaffManagement() {
               <DialogHeader>
                 <DialogTitle>Add New Staff Member</DialogTitle>
                 <DialogDescription>
-                  Enter the staff member's Principal ID and details. The Principal ID is a unique identifier from Internet Identity.
+                  Enter the staff member's details. Principal ID is optional and will be auto-generated if not provided.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="staffId">Principal ID *</Label>
+                  <Label htmlFor="staffId">Principal ID (Optional)</Label>
                   <div className="relative">
                     <Input
                       id="staffId"
                       value={staffId}
                       onChange={(e) => handleStaffIdChange(e.target.value)}
-                      placeholder="e.g., 2vxsx-fae or aaaaa-aa"
+                      placeholder="e.g., 2vxsx-fae or aaaaa-aa (leave empty to auto-generate)"
                       className={`pr-10 ${principalIdError ? 'border-destructive' : principalIdValid ? 'border-green-500' : ''}`}
                     />
                     {staffId && (
@@ -261,7 +266,7 @@ export default function StaffManagement() {
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
-                    Enter the complete Principal ID from the staff member's Internet Identity
+                    Leave empty to auto-generate a unique ID
                   </p>
                 </div>
                 <div>
@@ -303,7 +308,7 @@ export default function StaffManagement() {
                 <Button 
                   onClick={handleAddStaff} 
                   className="w-full" 
-                  disabled={addStaff.isPending || !principalIdValid || !name || !commissionRate}
+                  disabled={addStaff.isPending || name.trim() === '' || commissionRate.trim() === '' || (staffId.trim() !== '' && !principalIdValid)}
                 >
                   {addStaff.isPending ? 'Adding...' : 'Add Staff Member'}
                 </Button>
@@ -422,7 +427,7 @@ export default function StaffManagement() {
               <Button 
                 onClick={handleUpdateStaff} 
                 className="w-full" 
-                disabled={updateStaff.isPending || !name || !commissionRate}
+                disabled={updateStaff.isPending || name.trim() === '' || commissionRate.trim() === ''}
               >
                 {updateStaff.isPending ? 'Updating...' : 'Update Staff Member'}
               </Button>

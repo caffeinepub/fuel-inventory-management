@@ -145,15 +145,21 @@ export function useRecordSale() {
       fuelType,
       quantity,
       rate,
+      openTotalizer,
+      endTotalizer,
+      saleDate,
       staffId,
     }: {
       fuelType: FuelType;
       quantity: number;
       rate: number;
+      openTotalizer: number;
+      endTotalizer: number;
+      saleDate: bigint;
       staffId: Principal;
     }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.recordSale(fuelType, quantity, rate, staffId);
+      return actor.recordSale(fuelType, quantity, rate, openTotalizer, endTotalizer, saleDate, staffId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sales'] });
@@ -289,9 +295,9 @@ export function useStartShift() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (staffId: Principal) => {
+    mutationFn: async ({ staffId, shiftDate }: { staffId: Principal; shiftDate: bigint }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.startShift(staffId);
+      return actor.startShift(staffId, shiftDate);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shifts'] });
