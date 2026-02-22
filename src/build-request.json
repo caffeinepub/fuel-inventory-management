@@ -1,56 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Enable Add New Staff Member option for Admin and Manager roles",
+  "title": "Add owner login with Principal ID and serial number management",
+  "projectName": "Fuel Station Manager",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-26",
-      "text": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
-      "target": "frontend",
+      "id": "REQ-8",
+      "text": "Implement owner/admin login system that provides access control for entry management operations including adding new entries, correcting existing entries, and modifying entry data",
+      "target": "both",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "admin level and manager level add a new staff member option available"
+          "login for website or app owner provide access for entry, entry correction or modification"
         ]
       },
       "acceptanceCriteria": [
-        "Users with Owner role can see and click the 'Add New Staff Member' button",
-        "Users with Manager role can see and click the 'Add New Staff Member' button",
-        "Users with Operator and Attendant roles cannot see or access the 'Add New Staff Member' button",
-        "The button functionality works correctly for both Owner and Manager roles"
+        "Owner can log in using Internet Identity authentication",
+        "Authenticated owner has permissions to add new entries",
+        "Authenticated owner can correct/edit existing entries",
+        "Authenticated owner can modify entry data",
+        "Unauthenticated users cannot access entry management features"
       ]
     },
     {
-      "id": "REQ-27",
-      "text": "Update backend access control in the addStaffMember function to allow both Owner and Manager roles to add new staff members",
+      "id": "REQ-9",
+      "text": "When a Principal ID is modified for any entry, automatically update the associated Serial Number to reflect the change and maintain data consistency",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "admin level and manager level add a new staff member option available"
+          "principle ID modified than principle ID change for Serial Number"
         ]
       },
       "acceptanceCriteria": [
-        "The addStaffMember function accepts requests from users with Owner role",
-        "The addStaffMember function accepts requests from users with Manager role",
-        "The addStaffMember function rejects requests from users with Operator or Attendant roles",
-        "Appropriate error messages are returned when unauthorized users attempt to add staff"
+        "When a Principal ID is updated, the system automatically generates or updates the corresponding Serial Number",
+        "Serial Number changes are persisted to backend storage",
+        "Serial Number update happens atomically with Principal ID modification",
+        "Updated Serial Number is immediately reflected in the UI"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Display updated Serial Numbers in the staff management interface whenever Principal IDs are modified, ensuring users can verify the automatic serial number assignment",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "principle ID modified than principle ID change for Serial Number"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Serial Number field shows the current value for each staff entry",
+        "When Principal ID is modified, Serial Number updates are visible immediately",
+        "Serial Number display is read-only and auto-generated"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the Internet Identity authentication flow",
-    "Maintain the existing UI component structure in StaffManagement",
-    "Preserve all existing role-based access control patterns for other features"
+    "Use existing Internet Identity authentication system",
+    "Maintain single-actor backend architecture",
+    "Do not modify immutable frontend paths (useInternetIdentity.ts, useActor.ts, main.tsx, components/ui)"
   ],
   "nonGoals": [
-    "Changing the staff member form fields or validation logic",
-    "Modifying other role permissions beyond adding staff members",
-    "Adding new roles beyond the existing Owner, Manager, Operator, and Attendant"
+    "Creating a separate admin portal or login page",
+    "Implementing custom authentication beyond Internet Identity",
+    "Manual serial number entry or override functionality"
   ],
   "imageRequirements": {
     "required": [],

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useGetExpenses, useRecordExpense } from '../hooks/useQueries';
+import { useConnectionMonitor } from '../hooks/useConnectionMonitor';
+import { useOfflineStorage } from '../hooks/useOfflineStorage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,13 +10,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Receipt } from 'lucide-react';
+import { Receipt, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExpenseCategory } from '../backend';
+import type { Expense } from '../backend';
 
 export default function ExpenseLogger() {
   const { data: expenses = [] } = useGetExpenses();
   const recordExpense = useRecordExpense();
+  const { isConnected } = useConnectionMonitor();
+  const { addExpense } = useOfflineStorage();
 
   const [category, setCategory] = useState<ExpenseCategory>(ExpenseCategory.maintenance);
   const [amount, setAmount] = useState('');
@@ -33,11 +38,30 @@ export default function ExpenseLogger() {
       return;
     }
 
+    if (!isConnected) {
+      try {
+        const offlineExpense: Expense = {
+          id: BigInt(Date.now()),
+          category,
+          amount: parseFloat(amount),
+          description: description.trim(),
+          timestamp: BigInt(Date.now() * 1_000_000),
+        };
+        addExpense(offlineExpense);
+        toast.success('Expense saved offline - will sync when online');
+        setAmount('');
+        setDescription('');
+      } catch (error) {
+        toast.error('Failed to save expense offline');
+      }
+      return;
+    }
+
     try {
       await recordExpense.mutateAsync({
         category,
         amount: parseFloat(amount),
-        description,
+        description: description.trim(),
       });
       toast.success('Expense recorded successfully');
       setAmount('');
@@ -67,47 +91,36 @@ export default function ExpenseLogger() {
     }
   };
 
-  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const categoryTotals = {
-    maintenance: expenses.filter((e) => e.category === ExpenseCategory.maintenance).reduce((sum, e) => sum + e.amount, 0),
-    electricity: expenses.filter((e) => e.category === ExpenseCategory.electricity).reduce((sum, e) => sum + e.amount, 0),
-    salaries: expenses.filter((e) => e.category === ExpenseCategory.salaries).reduce((sum, e) => sum + e.amount, 0),
-    supplies: expenses.filter((e) => e.category === ExpenseCategory.supplies).reduce((sum, e) => sum + e.amount, 0),
-  };
+  const categoryBreakdown = expenses.reduce((acc, exp) => {
+    const cat = exp.category;
+    acc[cat] = (acc[cat] || 0) + exp.amount;
+    return acc;
+  }, {} as Record<ExpenseCategory, number>);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Expense Logger</h1>
-        <p className="text-muted-foreground mt-1">Track and manage operational expenses</p>
+        <p className="text-muted-foreground mt-1">Track and manage station expenses</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">₹{totalExpenses.toFixed(2)}</p>
-          </CardContent>
-        </Card>
-
-        {Object.entries(categoryTotals).map(([cat, total]) => (
-          <Card key={cat}>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium capitalize">{cat}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl font-bold">₹{total.toFixed(2)}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {!isConnected && (
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-3">
+          <WifiOff className="w-5 h-5 text-destructive" />
+          <div>
+            <p className="font-medium text-destructive">Offline Mode</p>
+            <p className="text-sm text-muted-foreground">Expenses will be saved locally and synced when connection is restored</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Log New Expense</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>Log Expense</span>
+              {!isConnected && <Badge variant="destructive">Offline</Badge>}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -150,7 +163,7 @@ export default function ExpenseLogger() {
               </div>
 
               <Button type="submit" className="w-full" disabled={recordExpense.isPending}>
-                {recordExpense.isPending ? 'Recording...' : 'Record Expense'}
+                {recordExpense.isPending ? 'Recording...' : isConnected ? 'Record Expense' : 'Save Offline'}
               </Button>
             </form>
           </CardContent>
@@ -158,29 +171,22 @@ export default function ExpenseLogger() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Category Breakdown</CardTitle>
+            <CardTitle>Expense Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {Object.entries(categoryTotals).map(([cat, total]) => {
-                const percentage = totalExpenses > 0 ? (total / totalExpenses) * 100 : 0;
-                return (
-                  <div key={cat}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium capitalize">{cat}</span>
-                      <span className="text-muted-foreground">
-                        ₹{total.toFixed(2)} ({percentage.toFixed(1)}%)
-                      </span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary transition-all"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
+              {Object.entries(categoryBreakdown).map(([cat, total]) => (
+                <div key={cat} className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="w-4 h-4" />
+                    <span className="font-medium capitalize">{cat}</span>
                   </div>
-                );
-              })}
+                  <span className="text-lg font-bold">₹{total.toFixed(2)}</span>
+                </div>
+              ))}
+              {Object.keys(categoryBreakdown).length === 0 && (
+                <p className="text-center text-muted-foreground py-4">No expenses recorded yet</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -188,7 +194,7 @@ export default function ExpenseLogger() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Expense History</CardTitle>
+          <CardTitle>Recent Expenses</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>

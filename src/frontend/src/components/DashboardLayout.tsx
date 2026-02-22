@@ -2,6 +2,8 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useGetCallerUserProfile, useIsCallerAdmin } from '../hooks/useQueries';
 import { useQueryClient } from '@tanstack/react-query';
+import OfflineStatusIndicator from './OfflineStatusIndicator';
+import { Badge } from '@/components/ui/badge';
 import {
   LayoutDashboard,
   Fuel,
@@ -18,6 +20,7 @@ import {
   PieChart,
   Settings,
   LogOut,
+  Shield,
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -119,9 +122,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{userProfile?.name || 'User'}</p>
-              <p className="text-xs text-muted-foreground">
-                {userProfile?.staffRole ? String(userProfile.staffRole).charAt(0).toUpperCase() + String(userProfile.staffRole).slice(1) : 'Staff'}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs text-muted-foreground">
+                  {userProfile?.staffRole ? String(userProfile.staffRole).charAt(0).toUpperCase() + String(userProfile.staffRole).slice(1) : 'Staff'}
+                </p>
+                {isAdmin && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 flex items-center gap-1">
+                    <Shield className="w-2.5 h-2.5" />
+                    Admin
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
           <button
@@ -135,8 +146,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto p-6 max-w-7xl">{children}</div>
+      <main className="flex-1 overflow-y-auto flex flex-col">
+        <OfflineStatusIndicator />
+        <div className="container mx-auto p-6 max-w-7xl flex-1">{children}</div>
       </main>
     </div>
   );

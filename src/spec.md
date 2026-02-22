@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Enable Admin (Owner) role users to add new staff members alongside Manager role users.
+**Goal:** Add owner authentication and automatic serial number management linked to Principal ID changes.
 
 **Planned changes:**
-- Update StaffManagement component to show "Add New Staff Member" button for both Owner and Manager roles
-- Modify backend addStaffMember function to accept requests from both Owner and Manager roles
-- Ensure Operator and Attendant roles remain restricted from adding staff members
+- Implement owner/admin login using Internet Identity authentication
+- Add access control so only authenticated owners can add, correct, or modify entries
+- Automatically update Serial Numbers whenever a Principal ID is modified for any entry
+- Display updated Serial Numbers immediately in the staff management interface
 
-**User-visible outcome:** Admin (Owner) users can now add new staff members through the "Add New Staff Member" button, previously available only to Manager role users.
+**User-visible outcome:** Owners can log in to manage staff entries (add, edit, correct), and when they modify a Principal ID, the system automatically updates and displays the corresponding Serial Number.

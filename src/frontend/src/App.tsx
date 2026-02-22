@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from './hooks/useQueries';
+import { useAutoSync } from './hooks/useAutoSync';
 import DashboardLayout from './components/DashboardLayout';
 import Dashboard from './components/Dashboard';
 import TankMonitor from './components/TankMonitor';
@@ -28,6 +29,8 @@ import LoginButton from './components/LoginButton';
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { identity, isInitializing } = useInternetIdentity();
   const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
+
+  useAutoSync();
 
   if (isInitializing || profileLoading) {
     return (

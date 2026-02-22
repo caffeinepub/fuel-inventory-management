@@ -29,6 +29,10 @@ export type ExpenseCategory = { 'supplies' : null } |
   { 'salaries' : null };
 export type FuelType = { 'petrol' : null } |
   { 'diesel' : null };
+export interface OfflineData {
+  'expenses' : Array<Expense>,
+  'sales' : Array<Sale>,
+}
 export interface PriceUpdate {
   'fuelType' : FuelType,
   'newPrice' : number,
@@ -137,6 +141,7 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'startShift' : ActorMethod<[Principal], bigint>,
+  'syncOfflineData' : ActorMethod<[OfflineData], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updatePrice' : ActorMethod<[FuelType, number], undefined>,
   'updateStaff' : ActorMethod<[Principal, Staff], undefined>,

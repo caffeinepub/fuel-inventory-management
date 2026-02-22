@@ -99,6 +99,10 @@ export const StripeConfiguration = IDL.Record({
   'allowedCountries' : IDL.Vec(IDL.Text),
   'secretKey' : IDL.Text,
 });
+export const OfflineData = IDL.Record({
+  'expenses' : IDL.Vec(Expense),
+  'sales' : IDL.Vec(Sale),
+});
 export const http_header = IDL.Record({
   'value' : IDL.Text,
   'name' : IDL.Text,
@@ -167,6 +171,7 @@ export const idlService = IDL.Service({
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'startShift' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+  'syncOfflineData' : IDL.Func([OfflineData], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
@@ -268,6 +273,10 @@ export const idlFactory = ({ IDL }) => {
     'allowedCountries' : IDL.Vec(IDL.Text),
     'secretKey' : IDL.Text,
   });
+  const OfflineData = IDL.Record({
+    'expenses' : IDL.Vec(Expense),
+    'sales' : IDL.Vec(Sale),
+  });
   const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
   const http_request_result = IDL.Record({
     'status' : IDL.Nat,
@@ -337,6 +346,7 @@ export const idlFactory = ({ IDL }) => {
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'startShift' : IDL.Func([IDL.Principal], [IDL.Nat], []),
+    'syncOfflineData' : IDL.Func([OfflineData], [], []),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],

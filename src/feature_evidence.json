@@ -2,8 +2,30 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-staffmanagement-component-to-enable-the-add-new-staff-member-button-for-users-with-admin-owner-role-in-addition-to-the-existing-manager-role-access",
-      "featureTitle": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
+      "featureId": "feature-implement-owner-admin-login-system-that-provides-access-control-for-entry-management-operations-including-adding-new-entries-correcting-existing-entries-and-modifying-entry-data",
+      "featureTitle": "Implement owner/admin login system that provides access control for entry management operations including adding new entries, correcting existing entries, and modifying entry data",
+      "files": [
+        "frontend/src/components/DashboardLayout.tsx",
+        "frontend/src/components/StaffManagement.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-updated-serial-numbers-in-the-staff-management-interface-whenever-principal-ids-are-modified-ensuring-users-can-verify-the-automatic-serial-number-assignment",
+      "featureTitle": "Display updated Serial Numbers in the staff management interface whenever Principal IDs are modified, ensuring users can verify the automatic serial number assignment",
       "files": [
         "frontend/src/components/StaffManagement.tsx"
       ],
@@ -18,7 +40,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-26"
+        "REQ-10"
       ],
       "confidence": "high"
     }

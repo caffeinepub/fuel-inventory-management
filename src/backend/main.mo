@@ -231,6 +231,18 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can record sales");
     };
+
+    // Verify caller can record sales for this staff member
+    if (caller != staffId and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only record sales for yourself unless admin");
+    };
+
+    // Verify the staff member exists
+    switch (staff.get(staffId)) {
+      case (null) { Runtime.trap("Staff member not found") };
+      case (?_) {};
+    };
+
     let total = quantity * rate;
     let sale = {
       id = nextSaleId;
@@ -277,20 +289,36 @@ actor {
 
   // Staff Management
   public shared ({ caller }) func addStaffMember(staffMember : Staff) : async () {
-    // First verify caller is authenticated in the access control system
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can add staff members");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add staff members");
     };
 
-    // Then check if caller has owner or manager role
-    let callerRole = getCallerRole(caller);
-    switch (callerRole) {
-      case (#owner) { };
-      case (#manager) { };
-      case (_) { Runtime.trap("Unauthorized: Only owners and managers can add staff members") };
+    // Validate that the Principal is not anonymous
+    if (staffMember.id.isAnonymous()) {
+      Runtime.trap("Invalid: Cannot add anonymous principal as staff member");
     };
 
+    // Check if staff member already exists
+    switch (staff.get(staffMember.id)) {
+      case (?existing) {
+        Runtime.trap("Staff member with this Principal ID already exists");
+      };
+      case (null) {};
+    };
+
+    // Add staff member to staff map
     staff.add(staffMember.id, staffMember);
+
+    // Assign appropriate access control role based on staff role
+    let accessRole : AccessControl.UserRole = switch (staffMember.role) {
+      case (#owner) { #admin };
+      case (#manager) { #admin };
+      case (#operator) { #user };
+      case (#attendant) { #user };
+    };
+
+    // Assign the role in the access control system
+    AccessControl.assignRole(accessControlState, caller, staffMember.id, accessRole);
   };
 
   public query ({ caller }) func getStaff() : async [Staff] {
@@ -304,24 +332,44 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update staff");
     };
+
+    // Verify staff member exists
+    switch (staff.get(staffId)) {
+      case (null) { Runtime.trap("Staff member not found") };
+      case (?_) {};
+    };
+
+    // Validate that the new Principal ID matches the staffId being updated
+    if (staffMember.id != staffId) {
+      Runtime.trap("Invalid: Cannot change staff member Principal ID");
+    };
+
+    // Update staff member
     staff.add(staffId, staffMember);
+
+    // Update access control role if staff role changed
+    let accessRole : AccessControl.UserRole = switch (staffMember.role) {
+      case (#owner) { #admin };
+      case (#manager) { #admin };
+      case (#operator) { #user };
+      case (#attendant) { #user };
+    };
+
+    AccessControl.assignRole(accessControlState, caller, staffMember.id, accessRole);
   };
 
   public shared ({ caller }) func removeStaff(staffId : Principal) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can remove staff");
     };
-    staff.remove(staffId);
-  };
 
-  func getCallerRole(caller : Principal) : StaffRole {
-    switch (userProfiles.get(caller)) {
-      case (null) { Runtime.trap("Unauthorized: No user profile found") };
-      case (?profile) {
-        switch (profile.staffRole) {
-          case (null) { Runtime.trap("Unauthorized: No staff role found") };
-          case (?role) { role };
-        };
+    // Verify staff member exists before removing
+    switch (staff.get(staffId)) {
+      case (null) { Runtime.trap("Staff member not found") };
+      case (?_) {
+        staff.remove(staffId);
+        // Note: We don't remove the access control role as the user may still need access
+        // Admins can manually revoke roles if needed using assignRole with #guest
       };
     };
   };
@@ -331,6 +379,18 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start shifts");
     };
+
+    // Verify caller can start shift for this staff member
+    if (caller != staffId and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only start shifts for yourself unless admin");
+    };
+
+    // Verify the staff member exists
+    switch (staff.get(staffId)) {
+      case (null) { Runtime.trap("Staff member not found") };
+      case (?_) {};
+    };
+
     let shift = {
       id = nextShiftId;
       staffId;
@@ -351,6 +411,10 @@ actor {
     switch (shifts.get(shiftId)) {
       case (null) { Runtime.trap("Shift not found") };
       case (?shift) {
+        // Verify caller can end this shift
+        if (caller != shift.staffId and not AccessControl.isAdmin(accessControlState, caller)) {
+          Runtime.trap("Unauthorized: Can only end your own shifts unless admin");
+        };
         let updatedShift = { shift with endTime = ?Time.now() };
         shifts.add(shiftId, updatedShift);
       };
@@ -418,5 +482,52 @@ actor {
       Runtime.trap("Unauthorized: Only users can view price history");
     };
     priceUpdates.values().toArray();
+  };
+
+  //--------------
+  // Offline Sync (call from frontend when connection is restored)
+  //--------------
+  public shared ({ caller }) func syncOfflineData(offlineData : OfflineData) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can sync data");
+    };
+
+    // Verify ownership of all sales records
+    for (sale in offlineData.sales.values()) {
+      if (sale.staffId != caller and not AccessControl.isAdmin(accessControlState, caller)) {
+        Runtime.trap("Unauthorized: Cannot sync sales records for other staff members");
+      };
+      // Verify the staff member exists
+      switch (staff.get(sale.staffId)) {
+        case (null) { Runtime.trap("Staff member not found for sale record") };
+        case (?_) {};
+      };
+    };
+
+    syncExpenses(offlineData.expenses);
+    syncSales(offlineData.sales);
+  };
+
+  public type OfflineData = {
+    expenses : [Expense];
+    sales : [Sale];
+  };
+
+  // Helper function to sync expenses
+  func syncExpenses(entries : [Expense]) {
+    for (entry in entries.values()) {
+      expenses.add(entry.id, entry);
+      let maxId = Nat.max(nextExpenseId, entry.id + 1);
+      nextExpenseId := maxId;
+    };
+  };
+
+  // Helper function to sync sales
+  func syncSales(entries : [Sale]) {
+    for (entry in entries.values()) {
+      sales.add(entry.id, entry);
+      let maxId = Nat.max(nextSaleId, entry.id + 1);
+      nextSaleId := maxId;
+    };
   };
 };

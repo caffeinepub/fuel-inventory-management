@@ -49,6 +49,10 @@ export interface http_request_result {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export interface OfflineData {
+    expenses: Array<Expense>;
+    sales: Array<Sale>;
+}
 export interface ShoppingItem {
     productName: string;
     currency: string;
@@ -149,6 +153,7 @@ export interface backendInterface {
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     startShift(staffId: Principal): Promise<bigint>;
+    syncOfflineData(offlineData: OfflineData): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updatePrice(fuelType: FuelType, newPrice: number): Promise<void>;
     updateStaff(staffId: Principal, staffMember: Staff): Promise<void>;

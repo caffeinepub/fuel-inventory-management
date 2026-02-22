@@ -1,22 +1,49 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Enable Add New Staff Member option for Admin and Manager roles",
+  "title": "Add owner login with Principal ID and serial number management",
   "requirements": [
     {
-      "id": "REQ-26",
-      "summary": "Update the StaffManagement component to enable the 'Add New Staff Member' button for users with Admin (Owner) role in addition to the existing Manager role access",
+      "id": "REQ-8",
+      "summary": "Implement owner/admin login system with access control for staff entry management operations",
       "acceptanceCriteria": [
-        "Users with Owner role can see and click the 'Add New Staff Member' button",
-        "Users with Manager role can see and click the 'Add New Staff Member' button",
-        "Users with Operator and Attendant roles cannot see or access the 'Add New Staff Member' button",
-        "The button functionality works correctly for both Owner and Manager roles"
+        "Owner can log in using Internet Identity authentication",
+        "Authenticated owner has permissions to add new entries",
+        "Authenticated owner can correct/edit existing entries",
+        "Authenticated owner can modify entry data",
+        "Unauthenticated users cannot access entry management features"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/StaffManagement.tsx",
           "operation": "modify",
-          "description": "Update the access control logic to allow both Owner and Manager roles to see and use the 'Add New Staff Member' button. Modify the condition that currently restricts this button to Manager role only, expanding it to include Owner (admin) role as well. Ensure the button remains hidden for Operator and Attendant roles. The existing role-based UI pattern should be preserved, only expanding the allowed roles for this specific action."
+          "description": "Add permission guards around staff management UI controls (add, edit, delete buttons) by using the authorization component's isCallerAdmin hook. Show read-only view for non-admin users. Use the authorization component to check admin permissions before rendering modification controls. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/DashboardLayout.tsx",
+          "operation": "modify",
+          "description": "Add visual indication of admin status in the user profile section of the sidebar. Display role badge (Admin/Owner) next to the username when the user has admin permissions. Use the authorization component's isCallerAdmin check to determine admin status. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Ensure the useIsCallerAdmin hook properly wraps the backend isCallerAdmin query and returns the admin status for use in UI permission checks throughout the application."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Display updated Serial Numbers in the staff management interface when Principal IDs are modified",
+      "acceptanceCriteria": [
+        "Serial Number field shows the current value for each staff entry",
+        "When Principal ID is modified, Serial Number updates are visible immediately",
+        "Serial Number display is read-only and auto-generated"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/StaffManagement.tsx",
+          "operation": "modify",
+          "description": "Add Serial Number column to the staff table display showing Principal ID in a shortened, human-readable format (first 8 and last 4 characters with ellipsis). When editing a staff member's Principal ID via the edit dialog, display the updated Serial Number immediately after Principal ID change and before saving. Make Serial Number field read-only and auto-computed from the Principal ID. Add helper function to format Principal as Serial Number display string."
         }
       ]
     }

@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import { useRecordSale, useGetCurrentPrices, useGetStaff } from '../hooks/useQueries';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { useConnectionMonitor } from '../hooks/useConnectionMonitor';
+import { useOfflineStorage } from '../hooks/useOfflineStorage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import type { FuelType } from '../backend';
+import type { FuelType, Sale } from '../backend';
 import { Principal } from '@dfinity/principal';
+import { WifiOff } from 'lucide-react';
 
 export default function SalesForm() {
   const { identity } = useInternetIdentity();
   const recordSale = useRecordSale();
   const { data: prices = [] } = useGetCurrentPrices();
   const { data: staff = [] } = useGetStaff();
+  const { isConnected } = useConnectionMonitor();
+  const { addSale } = useOfflineStorage();
 
   const [fuelType, setFuelType] = useState<FuelType>('petrol' as FuelType);
   const [quantity, setQuantity] = useState('');
@@ -36,8 +42,29 @@ export default function SalesForm() {
       return;
     }
 
+    const staffId = Principal.fromText(selectedStaffId);
+
+    if (!isConnected) {
+      try {
+        const offlineSale: Sale = {
+          id: BigInt(Date.now()),
+          fuelType,
+          quantity: parseFloat(quantity),
+          rate: currentPrice,
+          total,
+          staffId,
+          timestamp: BigInt(Date.now() * 1_000_000),
+        };
+        addSale(offlineSale);
+        toast.success('Sale saved offline - will sync when online');
+        setQuantity('');
+      } catch (error) {
+        toast.error('Failed to save sale offline');
+      }
+      return;
+    }
+
     try {
-      const staffId = Principal.fromText(selectedStaffId);
       await recordSale.mutateAsync({
         fuelType,
         quantity: parseFloat(quantity),
@@ -58,10 +85,23 @@ export default function SalesForm() {
         <p className="text-muted-foreground mt-1">Record a new fuel sale transaction</p>
       </div>
 
+      {!isConnected && (
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-3">
+          <WifiOff className="w-5 h-5 text-destructive" />
+          <div>
+            <p className="font-medium text-destructive">Offline Mode</p>
+            <p className="text-sm text-muted-foreground">Sales will be saved locally and synced when connection is restored</p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Sale Details</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+              <span>Sale Details</span>
+              {!isConnected && <Badge variant="destructive">Offline</Badge>}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,7 +158,7 @@ export default function SalesForm() {
               </div>
 
               <Button type="submit" className="w-full" disabled={recordSale.isPending}>
-                {recordSale.isPending ? 'Recording...' : 'Record Sale'}
+                {recordSale.isPending ? 'Recording...' : isConnected ? 'Record Sale' : 'Save Offline'}
               </Button>
             </form>
           </CardContent>

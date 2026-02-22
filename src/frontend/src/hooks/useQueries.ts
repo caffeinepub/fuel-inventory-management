@@ -13,6 +13,7 @@ import type {
   UserProfile,
   StripeConfiguration,
   ShoppingItem,
+  OfflineData,
 } from '../backend';
 import { StaffRole } from '../backend';
 import { Principal } from '@dfinity/principal';
@@ -431,6 +432,25 @@ export function useCreateCheckoutSession() {
         throw new Error('Stripe session missing url');
       }
       return session;
+    },
+  });
+}
+
+// Offline Sync Query
+export function useSyncOfflineData() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (offlineData: OfflineData) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.syncOfflineData(offlineData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['tanks'] });
+      queryClient.invalidateQueries({ queryKey: ['cashCollections'] });
     },
   });
 }
