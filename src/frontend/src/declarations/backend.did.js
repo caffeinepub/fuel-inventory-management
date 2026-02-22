@@ -14,12 +14,6 @@ export const StaffRole = IDL.Variant({
   'operator' : IDL.Null,
   'attendant' : IDL.Null,
 });
-export const Staff = IDL.Record({
-  'id' : IDL.Principal,
-  'name' : IDL.Text,
-  'role' : StaffRole,
-  'commissionRate' : IDL.Float64,
-});
 export const FuelType = IDL.Variant({
   'petrol' : IDL.Null,
   'diesel' : IDL.Null,
@@ -88,6 +82,13 @@ export const ShiftView = IDL.Record({
   'endTime' : IDL.Opt(IDL.Int),
   'sales' : IDL.Vec(Sale),
 });
+export const Staff = IDL.Record({
+  'id' : IDL.Principal,
+  'name' : IDL.Text,
+  'role' : StaffRole,
+  'serialNumber' : IDL.Nat,
+  'commissionRate' : IDL.Float64,
+});
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
     'userPrincipal' : IDL.Opt(IDL.Text),
@@ -124,7 +125,11 @@ export const TransformationOutput = IDL.Record({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addStaffMember' : IDL.Func([Staff], [], []),
+  'addStaffMember' : IDL.Func(
+      [IDL.Text, IDL.Principal, StaffRole, IDL.Float64],
+      [],
+      [],
+    ),
   'addTank' : IDL.Func([Tank], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createCheckoutSession' : IDL.Func(
@@ -191,12 +196,6 @@ export const idlFactory = ({ IDL }) => {
     'operator' : IDL.Null,
     'attendant' : IDL.Null,
   });
-  const Staff = IDL.Record({
-    'id' : IDL.Principal,
-    'name' : IDL.Text,
-    'role' : StaffRole,
-    'commissionRate' : IDL.Float64,
-  });
   const FuelType = IDL.Variant({ 'petrol' : IDL.Null, 'diesel' : IDL.Null });
   const Tank = IDL.Record({
     'id' : IDL.Text,
@@ -262,6 +261,13 @@ export const idlFactory = ({ IDL }) => {
     'endTime' : IDL.Opt(IDL.Int),
     'sales' : IDL.Vec(Sale),
   });
+  const Staff = IDL.Record({
+    'id' : IDL.Principal,
+    'name' : IDL.Text,
+    'role' : StaffRole,
+    'serialNumber' : IDL.Nat,
+    'commissionRate' : IDL.Float64,
+  });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
       'userPrincipal' : IDL.Opt(IDL.Text),
@@ -295,7 +301,11 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addStaffMember' : IDL.Func([Staff], [], []),
+    'addStaffMember' : IDL.Func(
+        [IDL.Text, IDL.Principal, StaffRole, IDL.Float64],
+        [],
+        [],
+      ),
     'addTank' : IDL.Func([Tank], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createCheckoutSession' : IDL.Func(

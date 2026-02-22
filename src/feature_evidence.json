@@ -2,10 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-implement-owner-admin-login-system-that-provides-access-control-for-entry-management-operations-including-adding-new-entries-correcting-existing-entries-and-modifying-entry-data",
-      "featureTitle": "Implement owner/admin login system that provides access control for entry management operations including adding new entries, correcting existing entries, and modifying entry data",
+      "featureId": "feature-display-the-serial-number-column-in-the-staff-management-table-showing-each-staff-member-s-assigned-serial-number",
+      "featureTitle": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
       "files": [
-        "frontend/src/components/DashboardLayout.tsx",
         "frontend/src/components/StaffManagement.tsx"
       ],
       "components": [
@@ -19,13 +18,13 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-8"
+        "REQ-3"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-updated-serial-numbers-in-the-staff-management-interface-whenever-principal-ids-are-modified-ensuring-users-can-verify-the-automatic-serial-number-assignment",
-      "featureTitle": "Display updated Serial Numbers in the staff management interface whenever Principal IDs are modified, ensuring users can verify the automatic serial number assignment",
+      "featureId": "feature-when-adding-a-new-staff-member-automatically-assign-the-next-available-serial-number-without-requiring-manual-input",
+      "featureTitle": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
       "files": [
         "frontend/src/components/StaffManagement.tsx"
       ],
@@ -40,7 +39,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-10"
+        "REQ-4"
       ],
       "confidence": "high"
     }

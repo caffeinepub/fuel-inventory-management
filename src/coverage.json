@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T15:34:52.137Z",
+  "generatedAt": "2026-02-22T16:20:28.031Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,46 +11,49 @@
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Display updated Serial Numbers in the staff management interface whenever Principal IDs are modified, ensuring users can verify the automatic serial number assignment",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/StaffManagement.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/StaffManagement.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Implement owner/admin login system that provides access control for entry management operations including adding new entries, correcting existing entries, and modifying entry data",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/StaffManagement.tsx",
-          "frontend/src/components/DashboardLayout.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/StaffManagement.tsx",
-          "frontend/src/components/DashboardLayout.tsx"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "When a Principal ID is modified for any entry, automatically update the associated Serial Number to reflect the change and maintain data consistency",
+        "id": "REQ-2",
+        "summary": "Add a serial number field to the staff data model in the backend that auto-increments for each new staff member added",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/StaffManagement.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/StaffManagement.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/StaffManagement.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/StaffManagement.tsx"
+        ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/DashboardLayout.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
     "frontend/src/components/StaffManagement.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

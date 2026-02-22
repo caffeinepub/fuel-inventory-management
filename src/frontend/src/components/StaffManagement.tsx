@@ -13,12 +13,6 @@ import { toast } from 'sonner';
 import { StaffRole } from '../backend';
 import { Principal } from '@dfinity/principal';
 
-// Helper function to format Principal ID as Serial Number
-function formatSerialNumber(principalId: string): string {
-  if (principalId.length <= 12) return principalId;
-  return `${principalId.slice(0, 8)}...${principalId.slice(-4)}`;
-}
-
 export default function StaffManagement() {
   const { data: staff = [] } = useGetStaff();
   const { data: canManageStaff, isLoading: canManageLoading } = useCanManageStaff();
@@ -29,7 +23,7 @@ export default function StaffManagement() {
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingStaff, setEditingStaff] = useState<{ id: Principal; name: string; role: StaffRole; commissionRate: number } | null>(null);
+  const [editingStaff, setEditingStaff] = useState<{ id: Principal; serialNumber: bigint; name: string; role: StaffRole; commissionRate: number } | null>(null);
   
   const [staffId, setStaffId] = useState('');
   const [name, setName] = useState('');
@@ -115,7 +109,7 @@ export default function StaffManagement() {
     }
   };
 
-  const handleEditStaff = (member: { id: Principal; name: string; role: StaffRole; commissionRate: number }) => {
+  const handleEditStaff = (member: { id: Principal; serialNumber: bigint; name: string; role: StaffRole; commissionRate: number }) => {
     setEditingStaff(member);
     setName(member.name);
     setRole(member.role);
@@ -140,6 +134,7 @@ export default function StaffManagement() {
         staffId: editingStaff.id,
         staff: {
           id: editingStaff.id,
+          serialNumber: editingStaff.serialNumber,
           name,
           role,
           commissionRate: commissionValue,
@@ -265,11 +260,6 @@ export default function StaffManagement() {
                       {principalIdError}
                     </p>
                   )}
-                  {principalIdValid && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Serial Number: <span className="font-mono">{formatSerialNumber(staffId)}</span>
-                    </p>
-                  )}
                   <p className="text-xs text-muted-foreground mt-1">
                     Enter the complete Principal ID from the staff member's Internet Identity
                   </p>
@@ -331,17 +321,17 @@ export default function StaffManagement() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>S/N</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Commission Rate</TableHead>
-                <TableHead>Serial Number</TableHead>
-                <TableHead>Principal ID</TableHead>
                 {isAdmin && <TableHead className="text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {staff.map((member) => (
                 <TableRow key={member.id.toString()}>
+                  <TableCell className="font-medium">{Number(member.serialNumber)}</TableCell>
                   <TableCell className="font-medium">{member.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
@@ -349,8 +339,6 @@ export default function StaffManagement() {
                     </Badge>
                   </TableCell>
                   <TableCell>{member.commissionRate}%</TableCell>
-                  <TableCell className="font-mono text-sm">{formatSerialNumber(member.id.toString())}</TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{member.id.toString().slice(0, 20)}...</TableCell>
                   {isAdmin && (
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -390,20 +378,11 @@ export default function StaffManagement() {
           <DialogHeader>
             <DialogTitle>Edit Staff Member</DialogTitle>
             <DialogDescription>
-              Update staff member details. Principal ID cannot be changed.
+              Update staff member details.
             </DialogDescription>
           </DialogHeader>
           {editingStaff && (
             <div className="space-y-4">
-              <div>
-                <Label>Principal ID (Read-only)</Label>
-                <div className="p-2 bg-muted rounded-md">
-                  <p className="font-mono text-xs text-muted-foreground break-all">{editingStaff.id.toString()}</p>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Serial Number: <span className="font-mono">{formatSerialNumber(editingStaff.id.toString())}</span>
-                </p>
-              </div>
               <div>
                 <Label htmlFor="edit-name">Name *</Label>
                 <Input

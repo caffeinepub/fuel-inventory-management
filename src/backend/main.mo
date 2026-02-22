@@ -9,12 +9,15 @@ import Time "mo:core/Time";
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
 import Order "mo:core/Order";
+import Migration "migration";
 
 import OutCall "http-outcalls/outcall";
 import Stripe "stripe/stripe";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
+// Use with-clause to apply migration function on upgrades
+(with migration = Migration.run)
 actor {
   // Initialize the user system state
   let accessControlState = AccessControl.initState();
@@ -77,6 +80,7 @@ actor {
 
   public type Staff = {
     id : Principal;
+    serialNumber : Nat;
     name : Text;
     role : StaffRole;
     commissionRate : Float;
@@ -117,6 +121,7 @@ actor {
   var nextShiftId = 0;
   var nextCashCollectionId = 0;
   var nextServiceLogId = 0;
+  var nextSerialNumber = 1; // Auto-incremented serial number
 
   let userProfiles = Map.empty<Principal, UserProfile>();
   let tanks = Map.empty<Text, Tank>();
@@ -287,30 +292,42 @@ actor {
     expenses.values().toArray();
   };
 
-  // Staff Management
-  public shared ({ caller }) func addStaffMember(staffMember : Staff) : async () {
+  // Staff Management with Auto-Incremented Serial Numbers
+  public shared ({ caller }) func addStaffMember(name : Text, id : Principal, role : StaffRole, commissionRate : Float) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can add staff members");
     };
 
     // Validate that the Principal is not anonymous
-    if (staffMember.id.isAnonymous()) {
+    if (id.isAnonymous()) {
       Runtime.trap("Invalid: Cannot add anonymous principal as staff member");
     };
 
     // Check if staff member already exists
-    switch (staff.get(staffMember.id)) {
+    switch (staff.get(id)) {
       case (?existing) {
         Runtime.trap("Staff member with this Principal ID already exists");
       };
       case (null) {};
     };
 
+    // Create new staff member with auto-incremented serial number
+    let newStaff : Staff = {
+      id;
+      name;
+      role;
+      commissionRate;
+      serialNumber = nextSerialNumber;
+    };
+
     // Add staff member to staff map
-    staff.add(staffMember.id, staffMember);
+    staff.add(id, newStaff);
+
+    // Increment the serial number for the next addition
+    nextSerialNumber += 1;
 
     // Assign appropriate access control role based on staff role
-    let accessRole : AccessControl.UserRole = switch (staffMember.role) {
+    let accessRole : AccessControl.UserRole = switch (role) {
       case (#owner) { #admin };
       case (#manager) { #admin };
       case (#operator) { #user };
@@ -318,7 +335,7 @@ actor {
     };
 
     // Assign the role in the access control system
-    AccessControl.assignRole(accessControlState, caller, staffMember.id, accessRole);
+    AccessControl.assignRole(accessControlState, caller, id, accessRole);
   };
 
   public query ({ caller }) func getStaff() : async [Staff] {
@@ -328,7 +345,7 @@ actor {
     staff.values().toArray();
   };
 
-  public shared ({ caller }) func updateStaff(staffId : Principal, staffMember : Staff) : async () {
+  public shared ({ caller }) func updateStaff(staffId : Principal, updatedStaff : Staff) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can update staff");
     };
@@ -340,22 +357,33 @@ actor {
     };
 
     // Validate that the new Principal ID matches the staffId being updated
-    if (staffMember.id != staffId) {
+    if (updatedStaff.id != staffId) {
       Runtime.trap("Invalid: Cannot change staff member Principal ID");
     };
 
-    // Update staff member
-    staff.add(staffId, staffMember);
+    // Update staff member but preserve the serial number!
+    let existing = switch (staff.get(staffId)) {
+      case (?s) { s };
+      case (null) {
+        Runtime.trap("This is unreachable as the switch above traps if not found.");
+      };
+    };
+
+    let newStaff = {
+      updatedStaff with serialNumber = existing.serialNumber;
+    };
+
+    staff.add(staffId, newStaff);
 
     // Update access control role if staff role changed
-    let accessRole : AccessControl.UserRole = switch (staffMember.role) {
+    let accessRole : AccessControl.UserRole = switch (updatedStaff.role) {
       case (#owner) { #admin };
       case (#manager) { #admin };
       case (#operator) { #user };
       case (#attendant) { #user };
     };
 
-    AccessControl.assignRole(accessControlState, caller, staffMember.id, accessRole);
+    AccessControl.assignRole(accessControlState, caller, updatedStaff.id, accessRole);
   };
 
   public shared ({ caller }) func removeStaff(staffId : Principal) : async () {

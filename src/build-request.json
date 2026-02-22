@@ -1,76 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Add owner login with Principal ID and serial number management",
+  "title": "Add serial number field to staff management",
   "projectName": "Fuel Station Manager",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-8",
-      "text": "Implement owner/admin login system that provides access control for entry management operations including adding new entries, correcting existing entries, and modifying entry data",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "login for website or app owner provide access for entry, entry correction or modification"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Owner can log in using Internet Identity authentication",
-        "Authenticated owner has permissions to add new entries",
-        "Authenticated owner can correct/edit existing entries",
-        "Authenticated owner can modify entry data",
-        "Unauthenticated users cannot access entry management features"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "When a Principal ID is modified for any entry, automatically update the associated Serial Number to reflect the change and maintain data consistency",
+      "id": "REQ-2",
+      "text": "Add a serial number field to the staff data model in the backend that auto-increments for each new staff member added",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-latest"
         ],
         "quotes": [
-          "principle ID modified than principle ID change for Serial Number"
+          "add serial number"
         ]
       },
       "acceptanceCriteria": [
-        "When a Principal ID is updated, the system automatically generates or updates the corresponding Serial Number",
-        "Serial Number changes are persisted to backend storage",
-        "Serial Number update happens atomically with Principal ID modification",
-        "Updated Serial Number is immediately reflected in the UI"
+        "Staff records include a unique serial number field",
+        "Serial numbers auto-increment starting from 1",
+        "Serial numbers persist across canister upgrades"
       ]
     },
     {
-      "id": "REQ-10",
-      "text": "Display updated Serial Numbers in the staff management interface whenever Principal IDs are modified, ensuring users can verify the automatic serial number assignment",
+      "id": "REQ-3",
+      "text": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-latest"
         ],
         "quotes": [
-          "principle ID modified than principle ID change for Serial Number"
+          "add serial number"
         ]
       },
       "acceptanceCriteria": [
-        "Serial Number field shows the current value for each staff entry",
-        "When Principal ID is modified, Serial Number updates are visible immediately",
-        "Serial Number display is read-only and auto-generated"
+        "Serial number column is visible in the staff table",
+        "Serial numbers are displayed in ascending order",
+        "The column appears before or after the name column for easy reference"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-user-latest"
+        ],
+        "quotes": [
+          "add a new member"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The add staff form does not show a serial number input field",
+        "Serial numbers are assigned automatically by the backend",
+        "New staff members receive sequential serial numbers"
       ]
     }
   ],
   "constraints": [
-    "Use existing Internet Identity authentication system",
-    "Maintain single-actor backend architecture",
-    "Do not modify immutable frontend paths (useInternetIdentity.ts, useActor.ts, main.tsx, components/ui)"
+    "Do not modify immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Maintain single-actor architecture in backend/main.mo",
+    "Preserve existing staff management functionality including role assignment and commission rates"
   ],
   "nonGoals": [
-    "Creating a separate admin portal or login page",
-    "Implementing custom authentication beyond Internet Identity",
-    "Manual serial number entry or override functionality"
+    "Manually editable serial numbers",
+    "Reusing serial numbers from deleted staff members",
+    "Re-adding Principal ID field"
   ],
   "imageRequirements": {
     "required": [],

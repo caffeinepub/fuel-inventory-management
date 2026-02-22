@@ -1,49 +1,37 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add owner login with Principal ID and serial number management",
+  "title": "Add serial number field to staff management",
   "requirements": [
     {
-      "id": "REQ-8",
-      "summary": "Implement owner/admin login system with access control for staff entry management operations",
+      "id": "REQ-3",
+      "summary": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
       "acceptanceCriteria": [
-        "Owner can log in using Internet Identity authentication",
-        "Authenticated owner has permissions to add new entries",
-        "Authenticated owner can correct/edit existing entries",
-        "Authenticated owner can modify entry data",
-        "Unauthenticated users cannot access entry management features"
+        "Serial number column is visible in the staff table",
+        "Serial numbers are displayed in ascending order",
+        "The column appears before or after the name column for easy reference"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/StaffManagement.tsx",
           "operation": "modify",
-          "description": "Add permission guards around staff management UI controls (add, edit, delete buttons) by using the authorization component's isCallerAdmin hook. Show read-only view for non-admin users. Use the authorization component to check admin permissions before rendering modification controls. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/DashboardLayout.tsx",
-          "operation": "modify",
-          "description": "Add visual indication of admin status in the user profile section of the sidebar. Display role badge (Admin/Owner) next to the username when the user has admin permissions. Use the authorization component's isCallerAdmin check to determine admin status. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Ensure the useIsCallerAdmin hook properly wraps the backend isCallerAdmin query and returns the admin status for use in UI permission checks throughout the application."
+          "description": "Add a serial number column to the staff table display. Insert the column as the first column before the name field. Retrieve the serialNumber field from the Staff type (defined in backend.d.ts as bigint). Display serial numbers in ascending order by sorting staff members by their serialNumber field. Ensure the column header is labeled 'Serial No.' or 'S/N' for clarity. Verify the component's usage of the backend interface before implementing."
         }
       ]
     },
     {
-      "id": "REQ-10",
-      "summary": "Display updated Serial Numbers in the staff management interface when Principal IDs are modified",
+      "id": "REQ-4",
+      "summary": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
       "acceptanceCriteria": [
-        "Serial Number field shows the current value for each staff entry",
-        "When Principal ID is modified, Serial Number updates are visible immediately",
-        "Serial Number display is read-only and auto-generated"
+        "The add staff form does not show a serial number input field",
+        "Serial numbers are assigned automatically by the backend",
+        "New staff members receive sequential serial numbers"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/StaffManagement.tsx",
           "operation": "modify",
-          "description": "Add Serial Number column to the staff table display showing Principal ID in a shortened, human-readable format (first 8 and last 4 characters with ellipsis). When editing a staff member's Principal ID via the edit dialog, display the updated Serial Number immediately after Principal ID change and before saving. Make Serial Number field read-only and auto-computed from the Principal ID. Add helper function to format Principal as Serial Number display string."
+          "description": "Remove any serial number input field from the add staff form if present. Ensure the form only collects name, Principal ID, role, and commission rate. The backend's addStaffMember method (defined in backend.d.ts) will automatically assign serial numbers, so no frontend changes are needed for serial number assignment logic. Update any form validation or submission logic to exclude serial number handling. Verify the component's usage of the backend interface before implementing."
         }
       ]
     }

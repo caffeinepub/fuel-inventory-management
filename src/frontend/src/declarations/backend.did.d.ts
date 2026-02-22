@@ -65,6 +65,7 @@ export interface Staff {
   'id' : Principal,
   'name' : string,
   'role' : StaffRole,
+  'serialNumber' : bigint,
   'commissionRate' : number,
 }
 export type StaffRole = { 'manager' : null } |
@@ -111,7 +112,10 @@ export interface http_request_result {
 }
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addStaffMember' : ActorMethod<[Staff], undefined>,
+  'addStaffMember' : ActorMethod<
+    [string, Principal, StaffRole, number],
+    undefined
+  >,
   'addTank' : ActorMethod<[Tank], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createCheckoutSession' : ActorMethod<

@@ -1,28 +1,26 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Application with owner login system for managing entries and Principal IDs with serial number tracking",
+  "summary": "Project for managing members with serial numbers instead of Principal IDs",
   "architectural_notes": [
-    "Owner authentication system required for access control",
-    "Entry management with correction/modification capabilities",
-    "Principal ID changes trigger serial number updates"
+    "Members identified by serial numbers instead of Internet Identity Principal IDs"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-implement-owner-admin-login-system-that-provides-access-control-for-entry-management-operations-including-adding-new-entries-correcting-existing-entries-and-modifying-entry-data",
-      "title": "Implement owner/admin login system that provides access control for entry management operations including adding new entries, correcting existing entries, and modifying entry data",
+      "id": "feature-display-the-serial-number-column-in-the-staff-management-table-showing-each-staff-member-s-assigned-serial-number",
+      "title": "Display the serial number column in the staff management table, showing each staff member's assigned serial number",
       "reqIds": [
-        "REQ-8"
+        "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-updated-serial-numbers-in-the-staff-management-interface-whenever-principal-ids-are-modified-ensuring-users-can-verify-the-automatic-serial-number-assignment",
-      "title": "Display updated Serial Numbers in the staff management interface whenever Principal IDs are modified, ensuring users can verify the automatic serial number assignment",
+      "id": "feature-when-adding-a-new-staff-member-automatically-assign-the-next-available-serial-number-without-requiring-manual-input",
+      "title": "When adding a new staff member, automatically assign the next available serial number without requiring manual input",
       "reqIds": [
-        "REQ-10"
+        "REQ-4"
       ],
       "version": 1
     }
@@ -30,27 +28,15 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Login system for website/app owner",
+      "summary": "Add serial number field for new members",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Access control for entry operations (add, edit, modify)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Principal ID modification with automatic serial number update",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "When a Principal ID is modified for any entry, automatically update the associated Serial Number to reflect the change and maintain data consistency",
+      "summary": "Add a serial number field to the staff data model in the backend that auto-increments for each new staff member added",
       "reqIds": [
-        "REQ-9"
+        "REQ-2"
       ],
       "status": "pending"
     }

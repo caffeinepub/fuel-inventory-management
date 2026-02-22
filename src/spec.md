@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add owner authentication and automatic serial number management linked to Principal ID changes.
+**Goal:** Add auto-incrementing serial numbers to staff management.
 
 **Planned changes:**
-- Implement owner/admin login using Internet Identity authentication
-- Add access control so only authenticated owners can add, correct, or modify entries
-- Automatically update Serial Numbers whenever a Principal ID is modified for any entry
-- Display updated Serial Numbers immediately in the staff management interface
+- Add serial number field to staff data model that auto-increments for each new staff member
+- Display serial number column in the staff management table
+- Automatically assign serial numbers when adding new staff members without manual input
 
-**User-visible outcome:** Owners can log in to manage staff entries (add, edit, correct), and when they modify a Principal ID, the system automatically updates and displays the corresponding Serial Number.
+**User-visible outcome:** Each staff member will have a unique serial number displayed in the staff table, automatically assigned in sequential order when new staff are added.

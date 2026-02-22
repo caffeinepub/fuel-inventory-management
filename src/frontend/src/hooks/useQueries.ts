@@ -207,7 +207,9 @@ export function useGetStaff() {
     queryKey: ['staff'],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getStaff();
+      const staff = await actor.getStaff();
+      // Sort by serial number in ascending order
+      return staff.sort((a, b) => Number(a.serialNumber) - Number(b.serialNumber));
     },
     enabled: !!actor && !isFetching,
   });
@@ -218,9 +220,19 @@ export function useAddStaff() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (staff: Staff) => {
+    mutationFn: async ({
+      name,
+      id,
+      role,
+      commissionRate,
+    }: {
+      name: string;
+      id: Principal;
+      role: StaffRole;
+      commissionRate: number;
+    }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.addStaffMember(staff);
+      return actor.addStaffMember(name, id, role, commissionRate);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff'] });

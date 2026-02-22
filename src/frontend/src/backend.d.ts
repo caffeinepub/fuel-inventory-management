@@ -74,6 +74,7 @@ export interface Staff {
     id: Principal;
     name: string;
     role: StaffRole;
+    serialNumber: bigint;
     commissionRate: number;
 }
 export type StripeSessionStatus = {
@@ -126,7 +127,7 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
-    addStaffMember(staffMember: Staff): Promise<void>;
+    addStaffMember(name: string, id: Principal, role: StaffRole, commissionRate: number): Promise<void>;
     addTank(tank: Tank): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
@@ -156,6 +157,6 @@ export interface backendInterface {
     syncOfflineData(offlineData: OfflineData): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updatePrice(fuelType: FuelType, newPrice: number): Promise<void>;
-    updateStaff(staffId: Principal, staffMember: Staff): Promise<void>;
+    updateStaff(staffId: Principal, updatedStaff: Staff): Promise<void>;
     updateTankLevel(id: string, volume: number): Promise<void>;
 }
