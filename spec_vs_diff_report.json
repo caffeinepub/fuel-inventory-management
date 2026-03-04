@@ -1,0 +1,55 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-28T09:24:51.210Z",
+  "summary": "The diff implements REQ-2 (shift date/time selection for all staff) well, with datetime-local inputs in ShiftManagement.tsx defaulting to current time, and ShiftReport.tsx displaying timestamps. REQ-1 (full responsive design) is partially implemented in DashboardLayout.tsx (hamburger/drawer menu, min-h-[44px] nav items) and OfflineStatusIndicator.tsx, but many other components (SalesForm, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, Dashboard, etc.) are only summarized in frontend-file-summaries.txt without direct diff evidence of responsive changes.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "All pages and components (Dashboard, SalesForm, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, etc.) must adapt their layout, typography, and interactive elements to small, medium, and large screen sizes.",
+      "reason": "The diff only shows responsive changes in DashboardLayout.tsx, ShiftManagement.tsx, ShiftReport.tsx, and OfflineStatusIndicator.tsx. No diff content is provided for SalesForm, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, Dashboard, or other pages. File summaries mention these files but do not constitute diff evidence of responsive changes being applied.",
+      "evidence": [
+        "frontend/src/components/SalesForm.tsx",
+        "frontend/src/components/StaffManagement.tsx",
+        "frontend/src/components/TankMonitor.tsx",
+        "frontend/src/components/SalesReports.tsx",
+        "frontend/src/components/ExpenseLogger.tsx",
+        "frontend/src/components/AnalyticsCharts.tsx",
+        "frontend/src/components/FuelTypeAnalytics.tsx"
+      ]
+    },
+    {
+      "id": "REQ-1",
+      "requirement": "Tables should scroll horizontally or reflow on narrow viewports across all pages.",
+      "reason": "Horizontal scrollable table wrapper is visible in ShiftReport.tsx, but there is no diff evidence that other tables in SalesReports, StaffManagement, ExpenseLogger, or other components received this treatment.",
+      "evidence": [
+        "frontend/src/components/SalesReports.tsx",
+        "frontend/src/components/StaffManagement.tsx",
+        "frontend/src/components/ExpenseLogger.tsx"
+      ]
+    },
+    {
+      "id": "REQ-1",
+      "requirement": "All form inputs and buttons have minimum 44px tap targets on touch devices across all pages.",
+      "reason": "min-h-[44px] is applied to nav items in DashboardLayout.tsx, but there is no diff evidence that form inputs and buttons in SalesForm, ExpenseLogger, StaffManagement, TankMonitor, and other components received 44px minimum tap target sizing.",
+      "evidence": [
+        "frontend/src/components/SalesForm.tsx",
+        "frontend/src/components/ExpenseLogger.tsx",
+        "frontend/src/components/StaffManagement.tsx",
+        "frontend/src/components/TankMonitor.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [],
+  "confidence": 0.72,
+  "changed_files": [
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/DashboardLayout.tsx",
+    "frontend/src/components/OfflineStatusIndicator.tsx",
+    "frontend/src/components/ShiftManagement.tsx",
+    "frontend/src/components/ShiftReport.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json"
+  ]
+}

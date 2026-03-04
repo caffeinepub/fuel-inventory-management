@@ -1,0 +1,50 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-make-the-entire-application-fully-responsive-so-it-displays-and-functions-correctly-on-desktop-computers-tablets-and-mobile-phones-all-pages-and-components-dashboard-salesform-shiftmanagement-staffmanagement-tankmonitor-salesreports-expenselogger-analyticscharts-dashboardlayout-sidebar-etc-must-adapt-their-layout-typography-and-interactive-elements-to-small-medium-and-large-screen-sizes-the-sidebar-navigation-in-dashboardlayout-should-collapse-into-a-mobile-friendly-drawer-or-hamburger-menu-on-small-screens-tables-should-scroll-horizontally-or-reflow-on-narrow-viewports-forms-and-input-fields-must-be-touch-friendly-with-adequate-tap-target-sizes",
+      "featureTitle": "Make the entire application fully responsive so it displays and functions correctly on desktop computers, tablets, and mobile phones. All pages and components (Dashboard, SalesForm, ShiftManagement, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, DashboardLayout sidebar, etc.) must adapt their layout, typography, and interactive elements to small, medium, and large screen sizes. The sidebar navigation in DashboardLayout should collapse into a mobile-friendly drawer or hamburger menu on small screens. Tables should scroll horizontally or reflow on narrow viewports. Forms and input fields must be touch-friendly with adequate tap target sizes.",
+      "files": [
+        "frontend/src/components/DashboardLayout.tsx",
+        "frontend/src/components/OfflineStatusIndicator.tsx",
+        "frontend/src/components/ShiftReport.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-modify-shiftmanagement-tsx-so-that-all-staff-members-not-just-admins-can-select-both-a-start-shift-date-and-time-and-an-end-shift-date-and-time-when-starting-or-ending-a-shift-the-start-shift-form-must-include-a-date-picker-and-a-time-picker-for-the-shift-start-the-end-shift-form-must-include-a-date-picker-and-a-time-picker-for-the-shift-end-both-date-time-fields-should-default-to-the-current-date-and-time-but-be-fully-editable-by-the-user-the-ui-must-be-accessible-and-intuitive-on-mobile-devices",
+      "featureTitle": "Modify ShiftManagement.tsx so that ALL staff members (not just admins) can select both a start shift date and time AND an end shift date and time when starting or ending a shift. The start shift form must include a date picker and a time picker for the shift start. The end shift form must include a date picker and a time picker for the shift end. Both date/time fields should default to the current date and time but be fully editable by the user. The UI must be accessible and intuitive on mobile devices.",
+      "files": [
+        "frontend/src/components/ShiftManagement.tsx",
+        "frontend/src/components/ShiftReport.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

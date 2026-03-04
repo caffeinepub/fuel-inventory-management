@@ -1,0 +1,81 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-28T09:24:51.213Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Make the entire application fully responsive so it displays and functions correctly on desktop computers, tablets, and mobile phones. All pages and components (Dashboard, SalesForm, ShiftManagement, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, DashboardLayout sidebar, etc.) must adapt their layout, typography, and interactive elements to small, medium, and large screen sizes. The sidebar navigation in DashboardLayout should collapse into a mobile-friendly drawer or hamburger menu on small screens. Tables should scroll horizontally or reflow on narrow viewports. Forms and input fields must be touch-friendly with adequate tap target sizes.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/DashboardLayout.tsx",
+          "frontend/src/components/Dashboard.tsx",
+          "frontend/src/components/SalesForm.tsx",
+          "frontend/src/components/ShiftReport.tsx",
+          "frontend/src/components/SalesReports.tsx",
+          "frontend/src/components/StaffManagement.tsx",
+          "frontend/src/components/TankMonitor.tsx",
+          "frontend/src/components/ExpenseLogger.tsx",
+          "frontend/src/components/AlertsPanel.tsx",
+          "frontend/src/components/AnalyticsCharts.tsx",
+          "frontend/src/components/CommissionCalculator.tsx",
+          "frontend/src/components/CashCollectionEntry.tsx",
+          "frontend/src/components/PriceUpdateModule.tsx",
+          "frontend/src/components/FuelTypeAnalytics.tsx",
+          "frontend/src/components/ProfitLossDashboard.tsx",
+          "frontend/src/components/StockReconciliation.tsx",
+          "frontend/src/components/OfflineStatusIndicator.tsx",
+          "frontend/src/components/ProfileSetup.tsx",
+          "frontend/src/index.css"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/DashboardLayout.tsx",
+          "frontend/src/components/ShiftReport.tsx",
+          "frontend/src/components/OfflineStatusIndicator.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Modify ShiftManagement.tsx so that ALL staff members (not just admins) can select both a start shift date and time AND an end shift date and time when starting or ending a shift. The start shift form must include a date picker and a time picker for the shift start. The end shift form must include a date picker and a time picker for the shift end. Both date/time fields should default to the current date and time but be fully editable by the user. The UI must be accessible and intuitive on mobile devices.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ShiftManagement.tsx",
+          "frontend/src/components/ShiftReport.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ShiftManagement.tsx",
+          "frontend/src/components/ShiftReport.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "build-template/README.md",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/DashboardLayout.tsx",
+    "frontend/src/components/OfflineStatusIndicator.tsx",
+    "frontend/src/components/ShiftManagement.tsx",
+    "frontend/src/components/ShiftReport.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

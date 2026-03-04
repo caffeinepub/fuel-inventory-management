@@ -1,0 +1,140 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Responsive design + enhanced shift date/time selection for all staff",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Make the entire application fully responsive for desktop, tablet, and mobile devices with adaptive layouts, collapsible navigation, and touch-friendly interfaces",
+      "acceptanceCriteria": [
+        "All pages render correctly and are usable on viewport widths from 320px (mobile) through 768px (tablet) to 1280px+ (desktop)",
+        "The sidebar navigation collapses to a hamburger/drawer menu on screens narrower than 768px",
+        "Tables with many columns scroll horizontally on mobile without breaking layout",
+        "All form inputs and buttons have minimum 44px tap targets on touch devices",
+        "No horizontal overflow or clipped content on any standard mobile viewport",
+        "Font sizes and spacing scale appropriately across breakpoints"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DashboardLayout.tsx",
+          "operation": "modify",
+          "description": "Transform the sidebar navigation into a responsive layout: add mobile state management for sidebar visibility, implement a hamburger menu button that appears on screens narrower than 768px (md breakpoint), wrap the sidebar in a drawer/sheet component that overlays on mobile and remains static on desktop, add backdrop/overlay for mobile drawer, ensure the main content area adjusts margins responsively, and make the user profile section touch-friendly with adequate spacing. Use Tailwind responsive utilities (sm:, md:, lg:) and ensure minimum 44px tap targets for all interactive elements."
+        },
+        {
+          "path": "frontend/src/components/Dashboard.tsx",
+          "operation": "modify",
+          "description": "Make the dashboard overview fully responsive: convert the metrics grid to stack vertically on mobile (grid-cols-1), use 2 columns on tablet (sm:grid-cols-2), and 4 columns on desktop (lg:grid-cols-4). Ensure metric cards have adequate padding and font sizes scale appropriately (text-sm on mobile, text-base on tablet+). Make the APK banner text wrap properly on narrow screens and ensure all touch targets meet 44px minimum."
+        },
+        {
+          "path": "frontend/src/components/SalesForm.tsx",
+          "operation": "modify",
+          "description": "Enhance form responsiveness: ensure all input fields, dropdowns, and buttons have minimum 44px height for touch targets, add responsive padding and spacing using Tailwind utilities (p-4 sm:p-6), make form layout stack vertically on mobile and use grid on larger screens where appropriate, ensure date/time pickers are touch-friendly, and verify labels and helper text scale properly across breakpoints. Test on 320px viewport to ensure no overflow."
+        },
+        {
+          "path": "frontend/src/components/ShiftReport.tsx",
+          "operation": "modify",
+          "description": "Make the shift report table responsive: wrap the table in a horizontally scrollable container (overflow-x-auto) for mobile viewports, ensure table cells have adequate padding for touch interaction, consider showing abbreviated column headers or stacking data on very narrow screens, and ensure the table parent container has proper width constraints. Add responsive text sizing (text-xs sm:text-sm) and ensure no layout breakage on 320px width."
+        },
+        {
+          "path": "frontend/src/components/SalesReports.tsx",
+          "operation": "modify",
+          "description": "Implement responsive layout for sales reports: make the tabbed interface touch-friendly with larger tap targets for tab buttons (min-h-[44px]), ensure revenue metric cards stack vertically on mobile and use grid on tablet+, wrap sales transaction tables in horizontal scroll containers for mobile, make fuel breakdown sections responsive with proper spacing, and ensure date range selectors work well on touch devices. Use responsive text utilities throughout."
+        },
+        {
+          "path": "frontend/src/components/StaffManagement.tsx",
+          "operation": "modify",
+          "description": "Make staff management fully responsive: ensure the add/edit staff form has touch-friendly inputs (min-h-[44px]), make the staff list/table scrollable horizontally on mobile, stack form fields vertically on narrow screens, ensure action buttons (edit, delete) have adequate touch targets and spacing, and make modal dialogs adapt to mobile screens with proper padding. Use responsive grid utilities for form layout."
+        },
+        {
+          "path": "frontend/src/components/TankMonitor.tsx",
+          "operation": "modify",
+          "description": "Implement responsive tank monitoring: make tank cards stack vertically on mobile (grid-cols-1) and use 2-3 columns on larger screens (sm:grid-cols-2 lg:grid-cols-3), ensure progress bars and volume indicators scale properly, make the add/update tank forms touch-friendly with adequate input heights, ensure all buttons meet 44px minimum tap target, and verify visual indicators (progress bars, thresholds) remain readable at all sizes."
+        },
+        {
+          "path": "frontend/src/components/ExpenseLogger.tsx",
+          "operation": "modify",
+          "description": "Make expense logger responsive: ensure form inputs and category dropdowns have minimum 44px height, make the expense history table horizontally scrollable on mobile, stack form fields appropriately for narrow screens, ensure the offline sync status indicator remains visible and accessible on mobile, and verify all buttons and interactive elements meet touch target requirements. Add responsive text sizing and padding."
+        },
+        {
+          "path": "frontend/src/components/AlertsPanel.tsx",
+          "operation": "modify",
+          "description": "Make alerts panel responsive: ensure alert cards stack vertically on mobile with proper spacing, make action buttons touch-friendly (min-h-[44px]), ensure alert text wraps properly on narrow screens without overflow, use responsive font sizes (text-sm sm:text-base), and verify the panel adapts well within the dashboard layout on all screen sizes."
+        },
+        {
+          "path": "frontend/src/components/AnalyticsCharts.tsx",
+          "operation": "modify",
+          "description": "Implement responsive chart layouts: make Recharts components adapt to container width using ResponsiveContainer with 100% width, stack charts vertically on mobile, adjust chart heights for mobile viewports (h-64 on mobile, h-80 on desktop), ensure chart legends and tooltips remain readable on small screens, reduce font sizes in axis labels for mobile (fontSize={10} on mobile, fontSize={12} on desktop), and ensure proper spacing between multiple chart sections."
+        },
+        {
+          "path": "frontend/src/components/CommissionCalculator.tsx",
+          "operation": "modify",
+          "description": "Make commission calculator responsive: ensure the commission breakdown table scrolls horizontally on mobile, make calculation cards stack vertically on narrow screens, use responsive text sizing for commission amounts and percentages, ensure adequate spacing and padding on touch devices, and verify the layout adapts properly within the dashboard context on all breakpoints."
+        },
+        {
+          "path": "frontend/src/components/CashCollectionEntry.tsx",
+          "operation": "modify",
+          "description": "Implement responsive cash collection interface: ensure form inputs have 44px minimum height, make the sales vs collected comparison section stack vertically on mobile, ensure the collection history table is horizontally scrollable on narrow screens, use responsive padding and spacing, and verify discrepancy indicators remain clear and visible on all screen sizes."
+        },
+        {
+          "path": "frontend/src/components/PriceUpdateModule.tsx",
+          "operation": "modify",
+          "description": "Make price update module responsive: ensure form inputs and dropdowns meet 44px minimum height for touch targets, make the price history table horizontally scrollable on mobile, stack current prices display vertically on narrow screens, use responsive text sizing for price amounts, and ensure the admin-only interface adapts well to tablet and mobile viewports."
+        },
+        {
+          "path": "frontend/src/components/FuelTypeAnalytics.tsx",
+          "operation": "modify",
+          "description": "Implement responsive fuel analytics: make comparison cards stack vertically on mobile (grid-cols-1) and use columns on larger screens (sm:grid-cols-2), ensure percentage breakdowns and metrics scale appropriately, use responsive font sizes for numbers and labels, and verify the analytics section fits well within the dashboard layout on all breakpoints."
+        },
+        {
+          "path": "frontend/src/components/ProfitLossDashboard.tsx",
+          "operation": "modify",
+          "description": "Make profit/loss dashboard responsive: ensure metric cards stack vertically on mobile and use grid on larger screens (sm:grid-cols-2 lg:grid-cols-4), make revenue and expense breakdown sections adapt to narrow screens, use responsive text sizing for financial amounts, ensure visual indicators (profit/loss colors) remain clear, and verify adequate spacing on touch devices."
+        },
+        {
+          "path": "frontend/src/components/StockReconciliation.tsx",
+          "operation": "modify",
+          "description": "Implement responsive stock reconciliation: make the reconciliation table horizontally scrollable on mobile, ensure variance analysis cards stack vertically on narrow screens, use responsive text sizing for stock figures, ensure adequate padding and spacing for touch interaction, and verify the layout adapts properly within the dashboard on all breakpoints."
+        },
+        {
+          "path": "frontend/src/components/OfflineStatusIndicator.tsx",
+          "operation": "modify",
+          "description": "Make offline status indicator responsive: ensure the status bar adapts to narrow screens without overflow, make the sync button touch-friendly (min-h-[44px]), ensure pending item counts and sync progress text remain readable on mobile with responsive font sizes, and verify the indicator remains accessible and visible on all screen sizes without blocking important content."
+        },
+        {
+          "path": "frontend/src/components/ProfileSetup.tsx",
+          "operation": "modify",
+          "description": "Make profile setup form responsive: ensure all input fields and dropdowns have minimum 44px height for touch targets, stack form fields vertically on mobile, use responsive padding and spacing (p-4 sm:p-6), ensure the modal or form container adapts to mobile screens, and make the submit button adequately sized for touch interaction."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add responsive utility classes and ensure global styles support mobile-first design: verify Tailwind base styles include responsive resets, add any custom responsive utilities needed for touch targets (e.g., .touch-target class with min-h-[44px] min-w-[44px]), ensure typography scales appropriately using Tailwind's responsive font utilities, and verify the OKLCH color system variables work well on mobile devices."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Enable all staff members to select custom start and end date/time when starting or ending shifts with intuitive mobile-friendly date/time pickers",
+      "acceptanceCriteria": [
+        "Any logged-in staff member (not only admins) sees date and time pickers when starting a shift",
+        "Any logged-in staff member sees date and time pickers when ending a shift",
+        "Start shift form has separate date input and time input (or a combined datetime-local input) defaulting to current date/time",
+        "End shift form has separate date input and time input (or a combined datetime-local input) defaulting to current date/time",
+        "Selected start and end timestamps are saved correctly to the backend shift record",
+        "Shift records in ShiftReport display the staff-selected start and end timestamps accurately"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ShiftManagement.tsx",
+          "operation": "modify",
+          "description": "Enhance shift start and end forms to include custom date/time selection for all staff: add date and time input fields (using HTML5 date and time inputs or datetime-local) to the start shift form, defaulting to current date/time but fully editable; add similar date/time inputs to the end shift form with current date/time defaults; ensure the selected date and time values are combined into a Unix timestamp (in seconds or nanoseconds matching backend expectations) before calling backend.startShift and backend.endShift; remove any admin-only restrictions on date/time editing so all staff can customize; ensure inputs are touch-friendly (min-h-[44px]) and work well on mobile devices; add proper labels and validation to ensure date/time values are valid before submission; update UI to clearly indicate that custom timestamps are supported."
+        },
+        {
+          "path": "frontend/src/components/ShiftReport.tsx",
+          "operation": "modify",
+          "description": "Verify shift report displays custom start and end timestamps accurately: ensure the shift table correctly formats and displays the startTime and endTime from backend shift records, converting Unix timestamps to human-readable date/time strings; verify that shifts with custom (non-current) timestamps are displayed correctly; ensure responsive table layout handles longer datetime strings on mobile; confirm that the report reflects the exact date/time selected by staff during shift start/end operations."
+        }
+      ]
+    }
+  ]
+}

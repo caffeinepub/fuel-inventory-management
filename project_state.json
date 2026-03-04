@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Petrol station management app with staff management, sales tracking (petrol/diesel liter calculations), and shift management. Building responsive design for cross-device accessibility and enhanced shift options with start/end date-time selectors for all staff.",
+  "architectural_notes": [
+    "App is a petrol station management system with staff management, new sale (petrol/diesel liter calculations), and shift management modules",
+    "Staff serial number ID used; Principal ID is not mandatory"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-make-the-entire-application-fully-responsive-so-it-displays-and-functions-correctly-on-desktop-computers-tablets-and-mobile-phones-all-pages-and-components-dashboard-salesform-shiftmanagement-staffmanagement-tankmonitor-salesreports-expenselogger-analyticscharts-dashboardlayout-sidebar-etc-must-adapt-their-layout-typography-and-interactive-elements-to-small-medium-and-large-screen-sizes-the-sidebar-navigation-in-dashboardlayout-should-collapse-into-a-mobile-friendly-drawer-or-hamburger-menu-on-small-screens-tables-should-scroll-horizontally-or-reflow-on-narrow-viewports-forms-and-input-fields-must-be-touch-friendly-with-adequate-tap-target-sizes",
+      "title": "Make the entire application fully responsive so it displays and functions correctly on desktop computers, tablets, and mobile phones. All pages and components (Dashboard, SalesForm, ShiftManagement, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, DashboardLayout sidebar, etc.) must adapt their layout, typography, and interactive elements to small, medium, and large screen sizes. The sidebar navigation in DashboardLayout should collapse into a mobile-friendly drawer or hamburger menu on small screens. Tables should scroll horizontally or reflow on narrow viewports. Forms and input fields must be touch-friendly with adequate tap target sizes.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-modify-shiftmanagement-tsx-so-that-all-staff-members-not-just-admins-can-select-both-a-start-shift-date-and-time-and-an-end-shift-date-and-time-when-starting-or-ending-a-shift-the-start-shift-form-must-include-a-date-picker-and-a-time-picker-for-the-shift-start-the-end-shift-form-must-include-a-date-picker-and-a-time-picker-for-the-shift-end-both-date-time-fields-should-default-to-the-current-date-and-time-but-be-fully-editable-by-the-user-the-ui-must-be-accessible-and-intuitive-on-mobile-devices",
+      "title": "Modify ShiftManagement.tsx so that ALL staff members (not just admins) can select both a start shift date and time AND an end shift date and time when starting or ending a shift. The start shift form must include a date picker and a time picker for the shift start. The end shift form must include a date picker and a time picker for the shift end. Both date/time fields should default to the current date and time but be fully editable by the user. The UI must be accessible and intuitive on mobile devices.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Responsive design for computer, tablet, and mobile accessibility",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Shift options: all staff can select start shift date/time and end shift date/time",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Petrol Station Management App",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

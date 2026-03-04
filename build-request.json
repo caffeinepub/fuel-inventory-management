@@ -1,0 +1,65 @@
+{
+  "kind": "build_request",
+  "title": "Responsive design + enhanced shift date/time selection for all staff",
+  "projectName": "Fuel Station Manager",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Make the entire application fully responsive so it displays and functions correctly on desktop computers, tablets, and mobile phones. All pages and components (Dashboard, SalesForm, ShiftManagement, StaffManagement, TankMonitor, SalesReports, ExpenseLogger, AnalyticsCharts, DashboardLayout sidebar, etc.) must adapt their layout, typography, and interactive elements to small, medium, and large screen sizes. The sidebar navigation in DashboardLayout should collapse into a mobile-friendly drawer or hamburger menu on small screens. Tables should scroll horizontally or reflow on narrow viewports. Forms and input fields must be touch-friendly with adequate tap target sizes.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Make this website easily accessible on your computer/tablet/mobile."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All pages render correctly and are usable on viewport widths from 320px (mobile) through 768px (tablet) to 1280px+ (desktop)",
+        "The sidebar navigation collapses to a hamburger/drawer menu on screens narrower than 768px",
+        "Tables with many columns scroll horizontally on mobile without breaking layout",
+        "All form inputs and buttons have minimum 44px tap targets on touch devices",
+        "No horizontal overflow or clipped content on any standard mobile viewport",
+        "Font sizes and spacing scale appropriately across breakpoints"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Modify ShiftManagement.tsx so that ALL staff members (not just admins) can select both a start shift date and time AND an end shift date and time when starting or ending a shift. The start shift form must include a date picker and a time picker for the shift start. The end shift form must include a date picker and a time picker for the shift end. Both date/time fields should default to the current date and time but be fully editable by the user. The UI must be accessible and intuitive on mobile devices.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Modify the shift options so that all staff have the option to select a start shift date and time and an end shift date and time."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Any logged-in staff member (not only admins) sees date and time pickers when starting a shift",
+        "Any logged-in staff member sees date and time pickers when ending a shift",
+        "Start shift form has separate date input and time input (or a combined datetime-local input) defaulting to current date/time",
+        "End shift form has separate date input and time input (or a combined datetime-local input) defaulting to current date/time",
+        "Selected start and end timestamps are saved correctly to the backend shift record",
+        "Shift records in ShiftReport display the staff-selected start and end timestamps accurately"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files listed in frontend.immutablePaths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "All Motoko logic must remain in the single backend/main.mo actor file",
+    "Preserve all existing functionality: sales tracking, totalizer calculations, staff management, tank monitoring, expenses, analytics"
+  ],
+  "nonGoals": [
+    "Building a native mobile app (APK/IPA)",
+    "Changing the authentication system",
+    "Adding new shift-related backend fields beyond what is needed for start/end datetime selection",
+    "Redesigning the visual theme or color scheme"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
