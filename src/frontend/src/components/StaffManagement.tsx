@@ -1,21 +1,49 @@
-import { useState } from 'react';
-import { useGetStaff, useAddStaff, useUpdateStaff, useRemoveStaff, useCanManageStaff, useIsCallerAdmin } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, AlertCircle, CheckCircle2, Edit } from 'lucide-react';
-import { toast } from 'sonner';
-import { StaffRole } from '../backend';
-import { Principal } from '@dfinity/principal';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Principal } from "@dfinity/principal";
+import { AlertCircle, CheckCircle2, Edit, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { StaffRole } from "../backend";
+import {
+  useAddStaff,
+  useCanManageStaff,
+  useGetStaff,
+  useIsCallerAdmin,
+  useRemoveStaff,
+  useUpdateStaff,
+} from "../hooks/useQueries";
 
 export default function StaffManagement() {
   const { data: staff = [] } = useGetStaff();
-  const { data: canManageStaff, isLoading: canManageLoading } = useCanManageStaff();
+  const { data: canManageStaff, isLoading: canManageLoading } =
+    useCanManageStaff();
   const { data: isAdmin } = useIsCallerAdmin();
   const addStaff = useAddStaff();
   const updateStaff = useUpdateStaff();
@@ -23,12 +51,18 @@ export default function StaffManagement() {
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingStaff, setEditingStaff] = useState<{ id: Principal; serialNumber: bigint; name: string; role: StaffRole; commissionRate: number } | null>(null);
-  
-  const [staffId, setStaffId] = useState('');
-  const [name, setName] = useState('');
+  const [editingStaff, setEditingStaff] = useState<{
+    id: Principal;
+    serialNumber: bigint;
+    name: string;
+    role: StaffRole;
+    commissionRate: number;
+  } | null>(null);
+
+  const [staffId, setStaffId] = useState("");
+  const [name, setName] = useState("");
   const [role, setRole] = useState<StaffRole>(StaffRole.attendant);
-  const [commissionRate, setCommissionRate] = useState('');
+  const [commissionRate, setCommissionRate] = useState("");
   const [principalIdError, setPrincipalIdError] = useState<string | null>(null);
   const [principalIdValid, setPrincipalIdValid] = useState(false);
 
@@ -43,8 +77,8 @@ export default function StaffManagement() {
       Principal.fromText(id);
       setPrincipalIdError(null);
       setPrincipalIdValid(true);
-    } catch (error) {
-      setPrincipalIdError('Invalid Principal ID format');
+    } catch (_error) {
+      setPrincipalIdError("Invalid Principal ID format");
       setPrincipalIdValid(false);
     }
   };
@@ -56,65 +90,78 @@ export default function StaffManagement() {
 
   const handleAddStaff = async () => {
     if (!name || !commissionRate) {
-      toast.error('Please fill all required fields');
+      toast.error("Please fill all required fields");
       return;
     }
 
     // If Principal ID is provided, validate it
     if (staffId && !principalIdValid) {
-      toast.error('Please enter a valid Principal ID or leave it empty');
+      toast.error("Please enter a valid Principal ID or leave it empty");
       return;
     }
 
-    const commissionValue = parseFloat(commissionRate);
-    if (isNaN(commissionValue) || commissionValue < 0 || commissionValue > 100) {
-      toast.error('Commission rate must be between 0 and 100');
+    const commissionValue = Number.parseFloat(commissionRate);
+    if (
+      Number.isNaN(commissionValue) ||
+      commissionValue < 0 ||
+      commissionValue > 100
+    ) {
+      toast.error("Commission rate must be between 0 and 100");
       return;
     }
 
     try {
       // Use provided Principal ID or generate a random one
-      const principal = staffId 
+      const principal = staffId
         ? Principal.fromText(staffId)
         : Principal.fromUint8Array(crypto.getRandomValues(new Uint8Array(29)));
-      
+
       await addStaff.mutateAsync({
         id: principal,
         name,
         role,
         commissionRate: commissionValue,
       });
-      toast.success('Staff member added successfully');
+      toast.success("Staff member added successfully");
       setIsAddDialogOpen(false);
-      setStaffId('');
-      setName('');
-      setCommissionRate('');
+      setStaffId("");
+      setName("");
+      setCommissionRate("");
       setRole(StaffRole.attendant);
       setPrincipalIdError(null);
       setPrincipalIdValid(false);
     } catch (error: any) {
-      console.error('Error adding staff:', error);
-      let errorMessage = 'Failed to add staff member';
-      
+      console.error("Error adding staff:", error);
+      let errorMessage = "Failed to add staff member";
+
       if (error?.message) {
-        if (error.message.includes('Invalid principal') || error.message.includes('Invalid: Cannot add anonymous')) {
-          errorMessage = 'Invalid Principal ID format';
-        } else if (error.message.includes('already exists')) {
-          errorMessage = 'A staff member with this Principal ID already exists';
-        } else if (error.message.includes('Unauthorized')) {
-          errorMessage = 'You do not have permission to add staff';
-        } else if (error.message.includes('Actor not available')) {
-          errorMessage = 'Connection error. Please try again';
+        if (
+          error.message.includes("Invalid principal") ||
+          error.message.includes("Invalid: Cannot add anonymous")
+        ) {
+          errorMessage = "Invalid Principal ID format";
+        } else if (error.message.includes("already exists")) {
+          errorMessage = "A staff member with this Principal ID already exists";
+        } else if (error.message.includes("Unauthorized")) {
+          errorMessage = "You do not have permission to add staff";
+        } else if (error.message.includes("Actor not available")) {
+          errorMessage = "Connection error. Please try again";
         } else {
           errorMessage = error.message;
         }
       }
-      
+
       toast.error(errorMessage);
     }
   };
 
-  const handleEditStaff = (member: { id: Principal; serialNumber: bigint; name: string; role: StaffRole; commissionRate: number }) => {
+  const handleEditStaff = (member: {
+    id: Principal;
+    serialNumber: bigint;
+    name: string;
+    role: StaffRole;
+    commissionRate: number;
+  }) => {
     setEditingStaff(member);
     setName(member.name);
     setRole(member.role);
@@ -124,13 +171,17 @@ export default function StaffManagement() {
 
   const handleUpdateStaff = async () => {
     if (!editingStaff || !name || !commissionRate) {
-      toast.error('Please fill all fields');
+      toast.error("Please fill all fields");
       return;
     }
 
-    const commissionValue = parseFloat(commissionRate);
-    if (isNaN(commissionValue) || commissionValue < 0 || commissionValue > 100) {
-      toast.error('Commission rate must be between 0 and 100');
+    const commissionValue = Number.parseFloat(commissionRate);
+    if (
+      Number.isNaN(commissionValue) ||
+      commissionValue < 0 ||
+      commissionValue > 100
+    ) {
+      toast.error("Commission rate must be between 0 and 100");
       return;
     }
 
@@ -145,48 +196,48 @@ export default function StaffManagement() {
           commissionRate: commissionValue,
         },
       });
-      toast.success('Staff member updated successfully');
+      toast.success("Staff member updated successfully");
       setIsEditDialogOpen(false);
       setEditingStaff(null);
-      setName('');
-      setCommissionRate('');
+      setName("");
+      setCommissionRate("");
       setRole(StaffRole.attendant);
     } catch (error: any) {
-      console.error('Error updating staff:', error);
-      let errorMessage = 'Failed to update staff member';
-      
+      console.error("Error updating staff:", error);
+      let errorMessage = "Failed to update staff member";
+
       if (error?.message) {
-        if (error.message.includes('Unauthorized')) {
-          errorMessage = 'You do not have permission to update staff';
-        } else if (error.message.includes('not found')) {
-          errorMessage = 'Staff member not found';
+        if (error.message.includes("Unauthorized")) {
+          errorMessage = "You do not have permission to update staff";
+        } else if (error.message.includes("not found")) {
+          errorMessage = "Staff member not found";
         } else {
           errorMessage = error.message;
         }
       }
-      
+
       toast.error(errorMessage);
     }
   };
 
   const handleRemoveStaff = async (id: Principal) => {
-    if (!confirm('Are you sure you want to remove this staff member?')) return;
+    if (!confirm("Are you sure you want to remove this staff member?")) return;
 
     try {
       await removeStaff.mutateAsync(id);
-      toast.success('Staff member removed successfully');
+      toast.success("Staff member removed successfully");
     } catch (error: any) {
-      console.error('Error removing staff:', error);
-      let errorMessage = 'Failed to remove staff member';
-      
+      console.error("Error removing staff:", error);
+      let errorMessage = "Failed to remove staff member";
+
       if (error?.message) {
-        if (error.message.includes('Unauthorized')) {
-          errorMessage = 'You do not have permission to remove staff';
+        if (error.message.includes("Unauthorized")) {
+          errorMessage = "You do not have permission to remove staff";
         } else {
           errorMessage = error.message;
         }
       }
-      
+
       toast.error(errorMessage);
     }
   };
@@ -208,8 +259,12 @@ export default function StaffManagement() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground">You don't have permission to access this page.</p>
-            <p className="text-sm text-muted-foreground mt-2">Only Owners and Managers can manage staff.</p>
+            <p className="text-muted-foreground">
+              You don't have permission to access this page.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Only Owners and Managers can manage staff.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -221,7 +276,9 @@ export default function StaffManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Staff Management</h1>
-          <p className="text-muted-foreground mt-1">Manage staff members and their roles</p>
+          <p className="text-muted-foreground mt-1">
+            Manage staff members and their roles
+          </p>
         </div>
         {(canManageStaff || isAdmin) && (
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -235,7 +292,8 @@ export default function StaffManagement() {
               <DialogHeader>
                 <DialogTitle>Add New Staff Member</DialogTitle>
                 <DialogDescription>
-                  Enter the staff member's details. Principal ID is optional and will be auto-generated if not provided.
+                  Enter the staff member's details. Principal ID is optional and
+                  will be auto-generated if not provided.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -247,7 +305,7 @@ export default function StaffManagement() {
                       value={staffId}
                       onChange={(e) => handleStaffIdChange(e.target.value)}
                       placeholder="e.g., 2vxsx-fae or aaaaa-aa (leave empty to auto-generate)"
-                      className={`pr-10 ${principalIdError ? 'border-destructive' : principalIdValid ? 'border-green-500' : ''}`}
+                      className={`pr-10 ${principalIdError ? "border-destructive" : principalIdValid ? "border-green-500" : ""}`}
                     />
                     {staffId && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -280,15 +338,22 @@ export default function StaffManagement() {
                 </div>
                 <div>
                   <Label htmlFor="role">Role *</Label>
-                  <Select value={role} onValueChange={(v) => setRole(v as StaffRole)}>
+                  <Select
+                    value={role}
+                    onValueChange={(v) => setRole(v as StaffRole)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={StaffRole.owner}>Owner</SelectItem>
                       <SelectItem value={StaffRole.manager}>Manager</SelectItem>
-                      <SelectItem value={StaffRole.operator}>Operator</SelectItem>
-                      <SelectItem value={StaffRole.attendant}>Attendant</SelectItem>
+                      <SelectItem value={StaffRole.operator}>
+                        Operator
+                      </SelectItem>
+                      <SelectItem value={StaffRole.attendant}>
+                        Attendant
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -305,12 +370,17 @@ export default function StaffManagement() {
                     placeholder="2.5"
                   />
                 </div>
-                <Button 
-                  onClick={handleAddStaff} 
-                  className="w-full" 
-                  disabled={addStaff.isPending || name.trim() === '' || commissionRate.trim() === '' || (staffId.trim() !== '' && !principalIdValid)}
+                <Button
+                  onClick={handleAddStaff}
+                  className="w-full"
+                  disabled={
+                    addStaff.isPending ||
+                    name.trim() === "" ||
+                    commissionRate.trim() === "" ||
+                    (staffId.trim() !== "" && !principalIdValid)
+                  }
                 >
-                  {addStaff.isPending ? 'Adding...' : 'Add Staff Member'}
+                  {addStaff.isPending ? "Adding..." : "Add Staff Member"}
                 </Button>
               </div>
             </DialogContent>
@@ -330,17 +400,22 @@ export default function StaffManagement() {
                 <TableHead>Name</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Commission Rate</TableHead>
-                {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                {isAdmin && (
+                  <TableHead className="text-right">Actions</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {staff.map((member) => (
                 <TableRow key={member.id.toString()}>
-                  <TableCell className="font-medium">{Number(member.serialNumber)}</TableCell>
+                  <TableCell className="font-medium">
+                    {Number(member.serialNumber)}
+                  </TableCell>
                   <TableCell className="font-medium">{member.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
-                      {String(member.role).charAt(0).toUpperCase() + String(member.role).slice(1)}
+                      {String(member.role).charAt(0).toUpperCase() +
+                        String(member.role).slice(1)}
                     </Badge>
                   </TableCell>
                   <TableCell>{member.commissionRate}%</TableCell>
@@ -372,7 +447,9 @@ export default function StaffManagement() {
           </Table>
 
           {staff.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">No staff members added yet</p>
+            <p className="text-center text-muted-foreground py-8">
+              No staff members added yet
+            </p>
           )}
         </CardContent>
       </Card>
@@ -382,9 +459,7 @@ export default function StaffManagement() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Staff Member</DialogTitle>
-            <DialogDescription>
-              Update staff member details.
-            </DialogDescription>
+            <DialogDescription>Update staff member details.</DialogDescription>
           </DialogHeader>
           {editingStaff && (
             <div className="space-y-4">
@@ -399,7 +474,10 @@ export default function StaffManagement() {
               </div>
               <div>
                 <Label htmlFor="edit-role">Role *</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as StaffRole)}>
+                <Select
+                  value={role}
+                  onValueChange={(v) => setRole(v as StaffRole)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -407,7 +485,9 @@ export default function StaffManagement() {
                     <SelectItem value={StaffRole.owner}>Owner</SelectItem>
                     <SelectItem value={StaffRole.manager}>Manager</SelectItem>
                     <SelectItem value={StaffRole.operator}>Operator</SelectItem>
-                    <SelectItem value={StaffRole.attendant}>Attendant</SelectItem>
+                    <SelectItem value={StaffRole.attendant}>
+                      Attendant
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -424,12 +504,16 @@ export default function StaffManagement() {
                   placeholder="2.5"
                 />
               </div>
-              <Button 
-                onClick={handleUpdateStaff} 
-                className="w-full" 
-                disabled={updateStaff.isPending || name.trim() === '' || commissionRate.trim() === ''}
+              <Button
+                onClick={handleUpdateStaff}
+                className="w-full"
+                disabled={
+                  updateStaff.isPending ||
+                  name.trim() === "" ||
+                  commissionRate.trim() === ""
+                }
               >
-                {updateStaff.isPending ? 'Updating...' : 'Update Staff Member'}
+                {updateStaff.isPending ? "Updating..." : "Update Staff Member"}
               </Button>
             </div>
           )}

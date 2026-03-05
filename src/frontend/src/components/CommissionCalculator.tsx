@@ -1,14 +1,23 @@
-import { useGetStaff, useGetSales } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Principal } from '@dfinity/principal';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Principal } from "@dfinity/principal";
+import { useGetSales, useGetStaff } from "../hooks/useQueries";
 
 export default function CommissionCalculator() {
   const { data: staff = [] } = useGetStaff();
   const { data: sales = [] } = useGetSales();
 
   const commissionData = staff.map((member) => {
-    const staffSales = sales.filter((s) => s.staffId.toString() === member.id.toString());
+    const staffSales = sales.filter(
+      (s) => s.staffId.toString() === member.id.toString(),
+    );
     const totalSales = staffSales.reduce((sum, s) => sum + s.total, 0);
     const commission = (totalSales * member.commissionRate) / 100;
 
@@ -23,13 +32,18 @@ export default function CommissionCalculator() {
     };
   });
 
-  const totalCommissions = commissionData.reduce((sum, d) => sum + d.commission, 0);
+  const totalCommissions = commissionData.reduce(
+    (sum, d) => sum + d.commission,
+    0,
+  );
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Commission Calculator</h1>
-        <p className="text-muted-foreground mt-1">Calculate staff commissions based on sales performance</p>
+        <p className="text-muted-foreground mt-1">
+          Calculate staff commissions based on sales performance
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -47,13 +61,17 @@ export default function CommissionCalculator() {
             <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">₹{sales.reduce((sum, s) => sum + s.total, 0).toFixed(2)}</p>
+            <p className="text-2xl font-bold">
+              ₹{sales.reduce((sum, s) => sum + s.total, 0).toFixed(2)}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Total Commissions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Commissions
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">₹{totalCommissions.toFixed(2)}</p>
@@ -82,19 +100,30 @@ export default function CommissionCalculator() {
                 <TableRow key={data.id.toString()}>
                   <TableCell className="font-medium">{data.name}</TableCell>
                   <TableCell>
-                    {String(data.role).charAt(0).toUpperCase() + String(data.role).slice(1)}
+                    {String(data.role).charAt(0).toUpperCase() +
+                      String(data.role).slice(1)}
                   </TableCell>
-                  <TableCell className="text-right">{data.salesCount}</TableCell>
-                  <TableCell className="text-right">₹{data.totalSales.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">{data.commissionRate}%</TableCell>
-                  <TableCell className="text-right font-semibold">₹{data.commission.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">
+                    {data.salesCount}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ₹{data.totalSales.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {data.commissionRate}%
+                  </TableCell>
+                  <TableCell className="text-right font-semibold">
+                    ₹{data.commission.toFixed(2)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
 
           {commissionData.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">No commission data available</p>
+            <p className="text-center text-muted-foreground py-8">
+              No commission data available
+            </p>
           )}
         </CardContent>
       </Card>

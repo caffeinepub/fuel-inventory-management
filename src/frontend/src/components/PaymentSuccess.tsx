@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CheckCircle } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@tanstack/react-router";
+import { CheckCircle } from "lucide-react";
 
 export default function PaymentSuccess() {
   return (
@@ -15,7 +15,8 @@ export default function PaymentSuccess() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Your payment has been processed successfully. Thank you for your purchase!
+            Your payment has been processed successfully. Thank you for your
+            purchase!
           </p>
           <Link to="/">
             <Button className="w-full">Return to Dashboard</Button>

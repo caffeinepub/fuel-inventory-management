@@ -1,19 +1,32 @@
-import { useState } from 'react';
-import { useGetExpenses, useRecordExpense } from '../hooks/useQueries';
-import { useConnectionMonitor } from '../hooks/useConnectionMonitor';
-import { useOfflineStorage } from '../hooks/useOfflineStorage';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Receipt, WifiOff } from 'lucide-react';
-import { toast } from 'sonner';
-import { ExpenseCategory } from '../backend';
-import type { Expense } from '../backend';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
+import { Receipt, WifiOff } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ExpenseCategory } from "../backend";
+import type { Expense } from "../backend";
+import { useConnectionMonitor } from "../hooks/useConnectionMonitor";
+import { useOfflineStorage } from "../hooks/useOfflineStorage";
+import { useGetExpenses, useRecordExpense } from "../hooks/useQueries";
 
 export default function ExpenseLogger() {
   const { data: expenses = [] } = useGetExpenses();
@@ -21,20 +34,22 @@ export default function ExpenseLogger() {
   const { isConnected } = useConnectionMonitor();
   const { addExpense } = useOfflineStorage();
 
-  const [category, setCategory] = useState<ExpenseCategory>(ExpenseCategory.maintenance);
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<ExpenseCategory>(
+    ExpenseCategory.maintenance,
+  );
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!amount || parseFloat(amount) <= 0) {
-      toast.error('Please enter a valid amount');
+    if (!amount || Number.parseFloat(amount) <= 0) {
+      toast.error("Please enter a valid amount");
       return;
     }
 
     if (!description.trim()) {
-      toast.error('Please enter a description');
+      toast.error("Please enter a description");
       return;
     }
 
@@ -43,16 +58,16 @@ export default function ExpenseLogger() {
         const offlineExpense: Expense = {
           id: BigInt(Date.now()),
           category,
-          amount: parseFloat(amount),
+          amount: Number.parseFloat(amount),
           description: description.trim(),
           timestamp: BigInt(Date.now() * 1_000_000),
         };
         addExpense(offlineExpense);
-        toast.success('Expense saved offline - will sync when online');
-        setAmount('');
-        setDescription('');
-      } catch (error) {
-        toast.error('Failed to save expense offline');
+        toast.success("Expense saved offline - will sync when online");
+        setAmount("");
+        setDescription("");
+      } catch (_error) {
+        toast.error("Failed to save expense offline");
       }
       return;
     }
@@ -60,14 +75,14 @@ export default function ExpenseLogger() {
     try {
       await recordExpense.mutateAsync({
         category,
-        amount: parseFloat(amount),
+        amount: Number.parseFloat(amount),
         description: description.trim(),
       });
-      toast.success('Expense recorded successfully');
-      setAmount('');
-      setDescription('');
-    } catch (error) {
-      toast.error('Failed to record expense');
+      toast.success("Expense recorded successfully");
+      setAmount("");
+      setDescription("");
+    } catch (_error) {
+      toast.error("Failed to record expense");
     }
   };
 
@@ -79,29 +94,34 @@ export default function ExpenseLogger() {
   const getCategoryColor = (cat: ExpenseCategory) => {
     switch (cat) {
       case ExpenseCategory.maintenance:
-        return 'bg-blue-100 text-blue-800';
+        return "bg-blue-100 text-blue-800";
       case ExpenseCategory.electricity:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
       case ExpenseCategory.salaries:
-        return 'bg-green-100 text-green-800';
+        return "bg-green-100 text-green-800";
       case ExpenseCategory.supplies:
-        return 'bg-purple-100 text-purple-800';
+        return "bg-purple-100 text-purple-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
-  const categoryBreakdown = expenses.reduce((acc, exp) => {
-    const cat = exp.category;
-    acc[cat] = (acc[cat] || 0) + exp.amount;
-    return acc;
-  }, {} as Record<ExpenseCategory, number>);
+  const categoryBreakdown = expenses.reduce(
+    (acc, exp) => {
+      const cat = exp.category;
+      acc[cat] = (acc[cat] || 0) + exp.amount;
+      return acc;
+    },
+    {} as Record<ExpenseCategory, number>,
+  );
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Expense Logger</h1>
-        <p className="text-muted-foreground mt-1">Track and manage station expenses</p>
+        <p className="text-muted-foreground mt-1">
+          Track and manage station expenses
+        </p>
       </div>
 
       {!isConnected && (
@@ -109,7 +129,10 @@ export default function ExpenseLogger() {
           <WifiOff className="w-5 h-5 text-destructive" />
           <div>
             <p className="font-medium text-destructive">Offline Mode</p>
-            <p className="text-sm text-muted-foreground">Expenses will be saved locally and synced when connection is restored</p>
+            <p className="text-sm text-muted-foreground">
+              Expenses will be saved locally and synced when connection is
+              restored
+            </p>
           </div>
         </div>
       )}
@@ -126,15 +149,27 @@ export default function ExpenseLogger() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={(v) => setCategory(v as ExpenseCategory)}>
+                <Select
+                  value={category}
+                  onValueChange={(v) => setCategory(v as ExpenseCategory)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={ExpenseCategory.maintenance}>Maintenance</SelectItem>
-                    <SelectItem value={ExpenseCategory.electricity}>Electricity</SelectItem>
-                    <SelectItem value={ExpenseCategory.salaries}>Salaries</SelectItem>
-                    <SelectItem value={ExpenseCategory.supplies}>Supplies</SelectItem>
+                    <SelectItem value={ExpenseCategory.maintenance}>
+                      Maintenance
+                    </SelectItem>
+                    <SelectItem value={ExpenseCategory.electricity}>
+                      Electricity
+                    </SelectItem>
+                    <SelectItem value={ExpenseCategory.salaries}>
+                      Salaries
+                    </SelectItem>
+                    <SelectItem value={ExpenseCategory.supplies}>
+                      Supplies
+                    </SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -162,8 +197,16 @@ export default function ExpenseLogger() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={recordExpense.isPending}>
-                {recordExpense.isPending ? 'Recording...' : isConnected ? 'Record Expense' : 'Save Offline'}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={recordExpense.isPending}
+              >
+                {recordExpense.isPending
+                  ? "Recording..."
+                  : isConnected
+                    ? "Record Expense"
+                    : "Save Offline"}
               </Button>
             </form>
           </CardContent>
@@ -176,7 +219,10 @@ export default function ExpenseLogger() {
           <CardContent>
             <div className="space-y-3">
               {Object.entries(categoryBreakdown).map(([cat, total]) => (
-                <div key={cat} className="flex justify-between items-center p-3 border rounded-lg">
+                <div
+                  key={cat}
+                  className="flex justify-between items-center p-3 border rounded-lg"
+                >
                   <div className="flex items-center gap-2">
                     <Receipt className="w-4 h-4" />
                     <span className="font-medium capitalize">{cat}</span>
@@ -185,7 +231,9 @@ export default function ExpenseLogger() {
                 </div>
               ))}
               {Object.keys(categoryBreakdown).length === 0 && (
-                <p className="text-center text-muted-foreground py-4">No expenses recorded yet</p>
+                <p className="text-center text-muted-foreground py-4">
+                  No expenses recorded yet
+                </p>
               )}
             </div>
           </CardContent>
@@ -212,18 +260,25 @@ export default function ExpenseLogger() {
                   <TableCell>{formatTimestamp(expense.timestamp)}</TableCell>
                   <TableCell>
                     <Badge className={getCategoryColor(expense.category)}>
-                      {String(expense.category).charAt(0).toUpperCase() + String(expense.category).slice(1)}
+                      {String(expense.category).charAt(0).toUpperCase() +
+                        String(expense.category).slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="max-w-xs truncate">{expense.description}</TableCell>
-                  <TableCell className="text-right font-semibold">₹{expense.amount.toFixed(2)}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {expense.description}
+                  </TableCell>
+                  <TableCell className="text-right font-semibold">
+                    ₹{expense.amount.toFixed(2)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
 
           {expenses.length === 0 && (
-            <p className="text-center text-muted-foreground py-8">No expenses recorded yet</p>
+            <p className="text-center text-muted-foreground py-8">
+              No expenses recorded yet
+            </p>
           )}
         </CardContent>
       </Card>

@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useActor } from './useActor';
-import { useOfflineStorage } from './useOfflineStorage';
-import type { OfflineData } from '../backend';
+import { useState } from "react";
+import type { OfflineData } from "../backend";
+import { useActor } from "./useActor";
+import { useOfflineStorage } from "./useOfflineStorage";
 
 export interface SyncStatus {
   issyncing: boolean;
@@ -12,7 +12,7 @@ export interface SyncStatus {
 
 export function useSyncOfflineData() {
   const { actor } = useActor();
-  const { pendingData, clearAll, reload } = useOfflineStorage();
+  const { pendingData, clearAll } = useOfflineStorage();
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     issyncing: false,
     progress: 0,
@@ -22,7 +22,7 @@ export function useSyncOfflineData() {
 
   const syncData = async (): Promise<boolean> => {
     if (!actor) {
-      setSyncStatus((prev) => ({ ...prev, error: 'Backend not available' }));
+      setSyncStatus((prev) => ({ ...prev, error: "Backend not available" }));
       return false;
     }
 
@@ -56,11 +56,11 @@ export function useSyncOfflineData() {
 
       return true;
     } catch (error: any) {
-      console.error('Sync failed:', error);
+      console.error("Sync failed:", error);
       setSyncStatus({
         issyncing: false,
         progress: 0,
-        error: error.message || 'Sync failed',
+        error: error.message || "Sync failed",
         lastSyncTime: null,
       });
       return false;

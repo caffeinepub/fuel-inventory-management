@@ -1,14 +1,20 @@
-import { useConnectionMonitor } from '../hooks/useConnectionMonitor';
-import { useAutoSync } from '../hooks/useAutoSync';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { WifiOff, Wifi, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
-import { useEffect, useRef } from 'react';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  AlertCircle,
+  CheckCircle,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+} from "lucide-react";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { useAutoSync } from "../hooks/useAutoSync";
+import { useConnectionMonitor } from "../hooks/useConnectionMonitor";
 
 export default function OfflineStatusIndicator() {
-  const { isConnected, isOnline, isBackendReachable } = useConnectionMonitor();
+  const { isConnected } = useConnectionMonitor();
   const { triggerSync, syncStatus, pendingCount } = useAutoSync();
   const lastSyncSuccessRef = useRef(false);
 
@@ -25,41 +31,54 @@ export default function OfflineStatusIndicator() {
 
   const handleManualSync = async () => {
     if (pendingCount === 0) {
-      toast.info('No pending data to sync');
+      toast.info("No pending data to sync");
       return;
     }
     if (!isConnected) {
-      toast.error('Cannot sync while offline');
+      toast.error("Cannot sync while offline");
       return;
     }
     await triggerSync();
   };
 
+  // Only show the bar when offline or there's something to show
+  const showBar =
+    !isConnected ||
+    pendingCount > 0 ||
+    syncStatus.issyncing ||
+    syncStatus.lastSyncTime ||
+    syncStatus.error;
+
+  if (!showBar) return null;
+
   return (
-    <div className="flex items-center gap-3 px-4 py-2 bg-card border-b border-border">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2 bg-card border-b border-border text-xs sm:text-sm">
+      <div className="flex items-center gap-1.5">
         {isConnected ? (
-          <Wifi className="w-4 h-4 text-green-600" />
+          <Wifi className="w-3.5 h-3.5 text-green-600 shrink-0" />
         ) : (
-          <WifiOff className="w-4 h-4 text-destructive" />
+          <WifiOff className="w-3.5 h-3.5 text-destructive shrink-0" />
         )}
-        <Badge variant={isConnected ? 'default' : 'destructive'} className="text-xs">
-          {isConnected ? 'Online' : 'Offline'}
+        <Badge
+          variant={isConnected ? "default" : "destructive"}
+          className="text-xs"
+        >
+          {isConnected ? "Online" : "Offline"}
         </Badge>
       </div>
 
       {pendingCount > 0 && (
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs">
-            {pendingCount} pending
-          </Badge>
-        </div>
+        <Badge variant="outline" className="text-xs">
+          {pendingCount} pending
+        </Badge>
       )}
 
       {syncStatus.issyncing && (
-        <div className="flex items-center gap-2 flex-1 max-w-xs">
-          <Progress value={syncStatus.progress} className="h-2" />
-          <span className="text-xs text-muted-foreground">Syncing...</span>
+        <div className="flex items-center gap-2 flex-1 min-w-[120px] max-w-xs">
+          <Progress value={syncStatus.progress} className="h-1.5" />
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            Syncing...
+          </span>
         </div>
       )}
 
@@ -82,7 +101,7 @@ export default function OfflineStatusIndicator() {
           size="sm"
           variant="outline"
           onClick={handleManualSync}
-          className="h-7 text-xs"
+          className="h-7 text-xs ml-auto min-w-[80px]"
         >
           <RefreshCw className="w-3 h-3 mr-1" />
           Sync Now

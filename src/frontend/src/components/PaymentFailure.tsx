@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { XCircle } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@tanstack/react-router";
+import { XCircle } from "lucide-react";
 
 export default function PaymentFailure() {
   return (
@@ -15,7 +15,8 @@ export default function PaymentFailure() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Your payment was cancelled or failed to process. Please try again or contact support if the issue persists.
+            Your payment was cancelled or failed to process. Please try again or
+            contact support if the issue persists.
           </p>
           <Link to="/">
             <Button className="w-full">Return to Dashboard</Button>

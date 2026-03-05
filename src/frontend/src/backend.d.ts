@@ -135,7 +135,7 @@ export interface backendInterface {
     addTank(tank: Tank): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
-    endShift(shiftId: bigint): Promise<void>;
+    endShift(shiftId: bigint, endTime: bigint): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCashCollections(): Promise<Array<CashCollection>>;
@@ -157,7 +157,7 @@ export interface backendInterface {
     removeStaff(staffId: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
-    startShift(staffId: Principal, shiftDate: bigint): Promise<bigint>;
+    startShift(staffId: Principal, shiftDate: bigint, startTime: bigint): Promise<bigint>;
     syncOfflineData(offlineData: OfflineData): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updatePrice(fuelType: FuelType, newPrice: number): Promise<void>;

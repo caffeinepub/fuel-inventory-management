@@ -9,7 +9,7 @@ import Time "mo:core/Time";
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
 import Order "mo:core/Order";
-import Migration "migration";
+
 
 import OutCall "http-outcalls/outcall";
 import Stripe "stripe/stripe";
@@ -17,7 +17,7 @@ import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
 // Use with-clause to apply migration function on upgrades
-(with migration = Migration.run)
+
 actor {
   // Initialize the user system state
   let accessControlState = AccessControl.initState();
@@ -411,7 +411,7 @@ actor {
   };
 
   // Shift Management
-  public shared ({ caller }) func startShift(staffId : Principal, shiftDate : Int) : async Nat {
+  public shared ({ caller }) func startShift(staffId : Principal, shiftDate : Int, startTime : Int) : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start shifts");
     };
@@ -430,7 +430,7 @@ actor {
     let shift = {
       id = nextShiftId;
       staffId;
-      startTime = Time.now();
+      startTime;
       endTime = null;
       sales = List.empty<Sale>();
       shiftDate;
@@ -441,7 +441,7 @@ actor {
     shiftId;
   };
 
-  public shared ({ caller }) func endShift(shiftId : Nat) : async () {
+  public shared ({ caller }) func endShift(shiftId : Nat, endTime : Int) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can end shifts");
     };
@@ -452,7 +452,7 @@ actor {
         if (caller != shift.staffId and not AccessControl.isAdmin(accessControlState, caller)) {
           Runtime.trap("Unauthorized: Can only end your own shifts unless admin");
         };
-        let updatedShift = { shift with endTime = ?Time.now() };
+        let updatedShift = { shift with endTime = ?endTime };
         shifts.add(shiftId, updatedShift);
       };
     };
@@ -569,4 +569,5 @@ actor {
     };
   };
 };
+
 

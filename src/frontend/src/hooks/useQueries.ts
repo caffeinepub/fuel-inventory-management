@@ -1,31 +1,31 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
+import type { Principal } from "@dfinity/principal";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  Tank,
-  Sale,
-  Expense,
-  Staff,
-  ShiftView,
   CashCollection,
-  PriceUpdate,
-  FuelType,
+  Expense,
   ExpenseCategory,
-  UserProfile,
-  StripeConfiguration,
-  ShoppingItem,
+  FuelType,
   OfflineData,
-} from '../backend';
-import { StaffRole } from '../backend';
-import { Principal } from '@dfinity/principal';
+  PriceUpdate,
+  Sale,
+  ShiftView,
+  ShoppingItem,
+  Staff,
+  StripeConfiguration,
+  Tank,
+  UserProfile,
+} from "../backend";
+import { StaffRole } from "../backend";
+import { useActor } from "./useActor";
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
+    queryKey: ["currentUserProfile"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getCallerUserProfile();
     },
     enabled: !!actor && !actorFetching,
@@ -45,11 +45,11 @@ export function useSaveCallerUserProfile() {
 
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.saveCallerUserProfile(profile);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
     },
   });
 }
@@ -58,7 +58,7 @@ export function useIsCallerAdmin() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['isAdmin'],
+    queryKey: ["isAdmin"],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
@@ -70,7 +70,9 @@ export function useIsCallerAdmin() {
 export function useCanManageStaff() {
   const { data: userProfile, isLoading } = useGetCallerUserProfile();
 
-  const canManage = userProfile?.staffRole === StaffRole.owner || userProfile?.staffRole === StaffRole.manager;
+  const canManage =
+    userProfile?.staffRole === StaffRole.owner ||
+    userProfile?.staffRole === StaffRole.manager;
 
   return {
     data: canManage,
@@ -83,7 +85,7 @@ export function useGetTanks() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Tank[]>({
-    queryKey: ['tanks'],
+    queryKey: ["tanks"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getTanks();
@@ -98,11 +100,11 @@ export function useAddTank() {
 
   return useMutation({
     mutationFn: async (tank: Tank) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.addTank(tank);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tanks'] });
+      queryClient.invalidateQueries({ queryKey: ["tanks"] });
     },
   });
 }
@@ -113,11 +115,11 @@ export function useUpdateTankLevel() {
 
   return useMutation({
     mutationFn: async ({ id, volume }: { id: string; volume: number }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.updateTankLevel(id, volume);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tanks'] });
+      queryClient.invalidateQueries({ queryKey: ["tanks"] });
     },
   });
 }
@@ -127,7 +129,7 @@ export function useGetSales() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Sale[]>({
-    queryKey: ['sales'],
+    queryKey: ["sales"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getSales();
@@ -158,12 +160,20 @@ export function useRecordSale() {
       saleDate: bigint;
       staffId: Principal;
     }) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.recordSale(fuelType, quantity, rate, openTotalizer, endTotalizer, saleDate, staffId);
+      if (!actor) throw new Error("Actor not available");
+      return actor.recordSale(
+        fuelType,
+        quantity,
+        rate,
+        openTotalizer,
+        endTotalizer,
+        saleDate,
+        staffId,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sales'] });
-      queryClient.invalidateQueries({ queryKey: ['tanks'] });
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["tanks"] });
     },
   });
 }
@@ -173,7 +183,7 @@ export function useGetExpenses() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Expense[]>({
-    queryKey: ['expenses'],
+    queryKey: ["expenses"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getExpenses();
@@ -196,11 +206,11 @@ export function useRecordExpense() {
       amount: number;
       description: string;
     }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.recordExpense(category, amount, description);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
     },
   });
 }
@@ -210,12 +220,14 @@ export function useGetStaff() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Staff[]>({
-    queryKey: ['staff'],
+    queryKey: ["staff"],
     queryFn: async () => {
       if (!actor) return [];
       const staff = await actor.getStaff();
       // Sort by serial number in ascending order
-      return staff.sort((a, b) => Number(a.serialNumber) - Number(b.serialNumber));
+      return staff.sort(
+        (a, b) => Number(a.serialNumber) - Number(b.serialNumber),
+      );
     },
     enabled: !!actor && !isFetching,
   });
@@ -237,11 +249,11 @@ export function useAddStaff() {
       role: StaffRole;
       commissionRate: number;
     }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.addStaffMember(name, id, role, commissionRate);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
     },
   });
 }
@@ -251,12 +263,15 @@ export function useUpdateStaff() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ staffId, staff }: { staffId: Principal; staff: Staff }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      staffId,
+      staff,
+    }: { staffId: Principal; staff: Staff }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.updateStaff(staffId, staff);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
     },
   });
 }
@@ -267,11 +282,11 @@ export function useRemoveStaff() {
 
   return useMutation({
     mutationFn: async (staffId: Principal) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.removeStaff(staffId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
     },
   });
 }
@@ -281,7 +296,7 @@ export function useGetShifts() {
   const { actor, isFetching } = useActor();
 
   return useQuery<ShiftView[]>({
-    queryKey: ['shifts'],
+    queryKey: ["shifts"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getShifts();
@@ -295,12 +310,20 @@ export function useStartShift() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ staffId, shiftDate }: { staffId: Principal; shiftDate: bigint }) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.startShift(staffId, shiftDate);
+    mutationFn: async ({
+      staffId,
+      shiftDate,
+      startTime,
+    }: {
+      staffId: Principal;
+      shiftDate: bigint;
+      startTime: bigint;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.startShift(staffId, shiftDate, startTime);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ["shifts"] });
     },
   });
 }
@@ -310,12 +333,15 @@ export function useEndShift() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (shiftId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.endShift(shiftId);
+    mutationFn: async ({
+      shiftId,
+      endTime,
+    }: { shiftId: bigint; endTime: bigint }) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.endShift(shiftId, endTime);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ["shifts"] });
     },
   });
 }
@@ -325,7 +351,7 @@ export function useGetCashCollections() {
   const { actor, isFetching } = useActor();
 
   return useQuery<CashCollection[]>({
-    queryKey: ['cashCollections'],
+    queryKey: ["cashCollections"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getCashCollections();
@@ -339,12 +365,15 @@ export function useRecordCashCollection() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ amount, breakdown }: { amount: number; breakdown: string }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      amount,
+      breakdown,
+    }: { amount: number; breakdown: string }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.recordCashCollection(amount, breakdown);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cashCollections'] });
+      queryClient.invalidateQueries({ queryKey: ["cashCollections"] });
     },
   });
 }
@@ -354,7 +383,7 @@ export function useGetCurrentPrices() {
   const { actor, isFetching } = useActor();
 
   return useQuery<[FuelType, number][]>({
-    queryKey: ['currentPrices'],
+    queryKey: ["currentPrices"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getCurrentPrices();
@@ -367,7 +396,7 @@ export function useGetPriceHistory() {
   const { actor, isFetching } = useActor();
 
   return useQuery<PriceUpdate[]>({
-    queryKey: ['priceHistory'],
+    queryKey: ["priceHistory"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getPriceHistory();
@@ -381,13 +410,16 @@ export function useUpdatePrice() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ fuelType, newPrice }: { fuelType: FuelType; newPrice: number }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async ({
+      fuelType,
+      newPrice,
+    }: { fuelType: FuelType; newPrice: number }) => {
+      if (!actor) throw new Error("Actor not available");
       return actor.updatePrice(fuelType, newPrice);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentPrices'] });
-      queryClient.invalidateQueries({ queryKey: ['priceHistory'] });
+      queryClient.invalidateQueries({ queryKey: ["currentPrices"] });
+      queryClient.invalidateQueries({ queryKey: ["priceHistory"] });
     },
   });
 }
@@ -397,7 +429,7 @@ export function useGetSalesAndExpenses() {
   const { actor, isFetching } = useActor();
 
   return useQuery<[Sale[], Expense[]]>({
-    queryKey: ['salesAndExpenses'],
+    queryKey: ["salesAndExpenses"],
     queryFn: async () => {
       if (!actor) return [[], []];
       return actor.getSalesAndExpenses();
@@ -411,7 +443,7 @@ export function useIsStripeConfigured() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['isStripeConfigured'],
+    queryKey: ["isStripeConfigured"],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isStripeConfigured();
@@ -426,11 +458,11 @@ export function useSetStripeConfiguration() {
 
   return useMutation({
     mutationFn: async (config: StripeConfiguration) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.setStripeConfiguration(config);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['isStripeConfigured'] });
+      queryClient.invalidateQueries({ queryKey: ["isStripeConfigured"] });
     },
   });
 }
@@ -439,15 +471,21 @@ export function useCreateCheckoutSession() {
   const { actor } = useActor();
 
   return useMutation({
-    mutationFn: async (items: ShoppingItem[]): Promise<{ id: string; url: string }> => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async (
+      items: ShoppingItem[],
+    ): Promise<{ id: string; url: string }> => {
+      if (!actor) throw new Error("Actor not available");
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
       const successUrl = `${baseUrl}/payment-success`;
       const cancelUrl = `${baseUrl}/payment-failure`;
-      const result = await actor.createCheckoutSession(items, successUrl, cancelUrl);
+      const result = await actor.createCheckoutSession(
+        items,
+        successUrl,
+        cancelUrl,
+      );
       const session = JSON.parse(result) as { id: string; url: string };
       if (!session?.url) {
-        throw new Error('Stripe session missing url');
+        throw new Error("Stripe session missing url");
       }
       return session;
     },
@@ -461,14 +499,14 @@ export function useSyncOfflineData() {
 
   return useMutation({
     mutationFn: async (offlineData: OfflineData) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.syncOfflineData(offlineData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sales'] });
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      queryClient.invalidateQueries({ queryKey: ['tanks'] });
-      queryClient.invalidateQueries({ queryKey: ['cashCollections'] });
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["tanks"] });
+      queryClient.invalidateQueries({ queryKey: ["cashCollections"] });
     },
   });
 }

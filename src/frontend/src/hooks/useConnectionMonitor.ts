@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useOnlineStatus } from './useOnlineStatus';
-import { useActor } from './useActor';
+import { useCallback, useEffect, useState } from "react";
+import { useActor } from "./useActor";
+import { useOnlineStatus } from "./useOnlineStatus";
 
 export function useConnectionMonitor() {
   const isOnline = useOnlineStatus();
@@ -19,7 +19,7 @@ export function useConnectionMonitor() {
       setIsBackendReachable(true);
       setLastOnlineTime(Date.now());
       return true;
-    } catch (error) {
+    } catch (_error) {
       setIsBackendReachable(false);
       return false;
     }

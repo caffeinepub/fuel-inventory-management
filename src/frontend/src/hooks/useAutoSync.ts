@@ -1,8 +1,8 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useConnectionMonitor } from './useConnectionMonitor';
-import { useSyncOfflineData } from './useSyncOfflineData';
-import { useOfflineStorage } from './useOfflineStorage';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef } from "react";
+import { useConnectionMonitor } from "./useConnectionMonitor";
+import { useOfflineStorage } from "./useOfflineStorage";
+import { useSyncOfflineData } from "./useSyncOfflineData";
 
 export function useAutoSync() {
   const { isConnected, isBackendReachable } = useConnectionMonitor();
@@ -22,10 +22,10 @@ export function useAutoSync() {
     isSyncingRef.current = false;
 
     if (success) {
-      queryClient.invalidateQueries({ queryKey: ['sales'] });
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      queryClient.invalidateQueries({ queryKey: ['tanks'] });
-      queryClient.invalidateQueries({ queryKey: ['cashCollections'] });
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["tanks"] });
+      queryClient.invalidateQueries({ queryKey: ["cashCollections"] });
     }
   }, [isConnected, hasPendingData, syncData, queryClient]);
 

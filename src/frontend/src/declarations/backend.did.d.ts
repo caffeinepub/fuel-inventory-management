@@ -126,7 +126,7 @@ export interface _SERVICE {
     [Array<ShoppingItem>, string, string],
     string
   >,
-  'endShift' : ActorMethod<[bigint], undefined>,
+  'endShift' : ActorMethod<[bigint, bigint], undefined>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCashCollections' : ActorMethod<[], Array<CashCollection>>,
@@ -151,7 +151,7 @@ export interface _SERVICE {
   'removeStaff' : ActorMethod<[Principal], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
-  'startShift' : ActorMethod<[Principal, bigint], bigint>,
+  'startShift' : ActorMethod<[Principal, bigint, bigint], bigint>,
   'syncOfflineData' : ActorMethod<[OfflineData], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updatePrice' : ActorMethod<[FuelType, number], undefined>,

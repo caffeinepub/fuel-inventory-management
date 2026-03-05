@@ -1,29 +1,37 @@
-import { useState } from 'react';
-import { useSaveCallerUserProfile } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
-import type { StaffRole } from '../backend';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { StaffRole } from "../backend";
+import { useSaveCallerUserProfile } from "../hooks/useQueries";
 
 export default function ProfileSetup() {
   const saveProfile = useSaveCallerUserProfile();
-  const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [staffRole, setStaffRole] = useState<StaffRole>('attendant' as StaffRole);
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [staffRole, setStaffRole] = useState<StaffRole>(
+    "attendant" as StaffRole,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error('Please enter your name');
+      toast.error("Please enter your name");
       return;
     }
 
     if (!phoneNumber.trim()) {
-      toast.error('Please enter your phone number');
+      toast.error("Please enter your phone number");
       return;
     }
 
@@ -33,9 +41,9 @@ export default function ProfileSetup() {
         phoneNumber: phoneNumber.trim(),
         staffRole,
       });
-      toast.success('Profile created successfully');
-    } catch (error) {
-      toast.error('Failed to create profile');
+      toast.success("Profile created successfully");
+    } catch (_error) {
+      toast.error("Failed to create profile");
     }
   };
 
@@ -69,7 +77,10 @@ export default function ProfileSetup() {
 
             <div>
               <Label htmlFor="role">Staff Role</Label>
-              <Select value={staffRole} onValueChange={(v) => setStaffRole(v as StaffRole)}>
+              <Select
+                value={staffRole}
+                onValueChange={(v) => setStaffRole(v as StaffRole)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -82,8 +93,12 @@ export default function ProfileSetup() {
               </Select>
             </div>
 
-            <Button type="submit" className="w-full" disabled={saveProfile.isPending}>
-              {saveProfile.isPending ? 'Creating Profile...' : 'Create Profile'}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={saveProfile.isPending}
+            >
+              {saveProfile.isPending ? "Creating Profile..." : "Create Profile"}
             </Button>
           </form>
         </CardContent>

@@ -1,38 +1,52 @@
-import { useGetSales } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useGetSales } from "../hooks/useQueries";
 
 export default function AnalyticsCharts() {
   const { data: sales = [] } = useGetSales();
 
   // Prepare data for line chart (sales over time)
-  const salesByDate = sales.reduce((acc, sale) => {
-    const date = new Date(Number(sale.timestamp) / 1_000_000);
-    const dateKey = date.toLocaleDateString();
-    
-    if (!acc[dateKey]) {
-      acc[dateKey] = { date: dateKey, revenue: 0, count: 0 };
-    }
-    acc[dateKey].revenue += sale.total;
-    acc[dateKey].count += 1;
-    return acc;
-  }, {} as Record<string, { date: string; revenue: number; count: number }>);
+  const salesByDate = sales.reduce(
+    (acc, sale) => {
+      const date = new Date(Number(sale.timestamp) / 1_000_000);
+      const dateKey = date.toLocaleDateString();
+
+      if (!acc[dateKey]) {
+        acc[dateKey] = { date: dateKey, revenue: 0, count: 0 };
+      }
+      acc[dateKey].revenue += sale.total;
+      acc[dateKey].count += 1;
+      return acc;
+    },
+    {} as Record<string, { date: string; revenue: number; count: number }>,
+  );
 
   const lineChartData = Object.values(salesByDate).slice(-30);
 
   // Prepare data for bar chart (fuel type comparison)
-  const petrolSales = sales.filter((s) => s.fuelType === 'petrol');
-  const dieselSales = sales.filter((s) => s.fuelType === 'diesel');
+  const petrolSales = sales.filter((s) => s.fuelType === "petrol");
+  const dieselSales = sales.filter((s) => s.fuelType === "diesel");
 
   const barChartData = [
     {
-      name: 'Petrol',
+      name: "Petrol",
       volume: petrolSales.reduce((sum, s) => sum + s.quantity, 0),
       revenue: petrolSales.reduce((sum, s) => sum + s.total, 0),
       transactions: petrolSales.length,
     },
     {
-      name: 'Diesel',
+      name: "Diesel",
       volume: dieselSales.reduce((sum, s) => sum + s.quantity, 0),
       revenue: dieselSales.reduce((sum, s) => sum + s.total, 0),
       transactions: dieselSales.length,
@@ -43,7 +57,9 @@ export default function AnalyticsCharts() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Analytics Charts</h1>
-        <p className="text-muted-foreground mt-1">Visual representation of sales trends and patterns</p>
+        <p className="text-muted-foreground mt-1">
+          Visual representation of sales trends and patterns
+        </p>
       </div>
 
       <Card>
@@ -58,8 +74,20 @@ export default function AnalyticsCharts() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#3b82f6" name="Revenue (₹)" strokeWidth={2} />
-              <Line type="monotone" dataKey="count" stroke="#10b981" name="Transactions" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke="#3b82f6"
+                name="Revenue (₹)"
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#10b981"
+                name="Transactions"
+                strokeWidth={2}
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>

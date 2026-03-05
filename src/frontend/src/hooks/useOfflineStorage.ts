@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import type { Sale, Expense } from '../backend';
+import { useEffect, useState } from "react";
+import type { Expense, Sale } from "../backend";
 
 const STORAGE_KEYS = {
-  SALES: 'offline_sales',
-  EXPENSES: 'offline_expenses',
+  SALES: "offline_sales",
+  EXPENSES: "offline_expenses",
 };
 
 export interface OfflineStorageData {
@@ -32,30 +32,34 @@ export function useOfflineStorage() {
         expenses: expensesStr ? JSON.parse(expensesStr) : [],
       });
     } catch (error) {
-      console.error('Failed to load offline data:', error);
+      console.error("Failed to load offline data:", error);
     }
   };
 
   const addSale = (sale: Sale) => {
     try {
-      const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.SALES) || '[]');
+      const current = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.SALES) || "[]",
+      );
       const updated = [...current, sale];
       localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(updated));
       loadFromStorage();
     } catch (error) {
-      console.error('Failed to save sale offline:', error);
+      console.error("Failed to save sale offline:", error);
       throw error;
     }
   };
 
   const addExpense = (expense: Expense) => {
     try {
-      const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.EXPENSES) || '[]');
+      const current = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.EXPENSES) || "[]",
+      );
       const updated = [...current, expense];
       localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(updated));
       loadFromStorage();
     } catch (error) {
-      console.error('Failed to save expense offline:', error);
+      console.error("Failed to save expense offline:", error);
       throw error;
     }
   };
@@ -66,7 +70,7 @@ export function useOfflineStorage() {
       localStorage.removeItem(STORAGE_KEYS.EXPENSES);
       setPendingData({ sales: [], expenses: [] });
     } catch (error) {
-      console.error('Failed to clear offline data:', error);
+      console.error("Failed to clear offline data:", error);
     }
   };
 
