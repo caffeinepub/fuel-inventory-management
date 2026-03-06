@@ -45,6 +45,7 @@ export default function SalesForm() {
   const [saleTime, setSaleTime] = useState<string>(format(new Date(), "HH:mm"));
   const [openTotalizer, setOpenTotalizer] = useState("");
   const [endTotalizer, setEndTotalizer] = useState("");
+  const [pumpNumber, setPumpNumber] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const currentPrice = prices.find((p) => p[0] === fuelType)?.[1] || 0;
@@ -112,6 +113,7 @@ export default function SalesForm() {
         toast.success("Sale saved offline - will sync when online");
         setOpenTotalizer("");
         setEndTotalizer("");
+        setPumpNumber("");
       } catch (_error) {
         toast.error("Failed to save sale offline");
       }
@@ -131,6 +133,7 @@ export default function SalesForm() {
       toast.success("Sale recorded successfully");
       setOpenTotalizer("");
       setEndTotalizer("");
+      setPumpNumber("");
     } catch (_error) {
       toast.error("Failed to record sale");
     }
@@ -204,6 +207,18 @@ export default function SalesForm() {
                     className="w-32"
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="pumpNumber">Pump Number</Label>
+                <Input
+                  id="pumpNumber"
+                  type="text"
+                  value={pumpNumber}
+                  onChange={(e) => setPumpNumber(e.target.value)}
+                  placeholder="e.g. Pump 1, P-02"
+                  data-ocid="sale.pump_number.input"
+                />
               </div>
 
               <div>
