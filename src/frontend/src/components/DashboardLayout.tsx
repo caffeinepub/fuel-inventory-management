@@ -26,6 +26,7 @@ import {
   ShoppingCart,
   TrendingUp,
   Users,
+  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
@@ -51,10 +52,11 @@ export default function DashboardLayout({
     { path: "/", label: "Dashboard", icon: LayoutDashboard },
     { path: "/tanks", label: "Tank Monitor", icon: Fuel },
     { path: "/alerts", label: "Alerts", icon: AlertTriangle },
-    { path: "/stock", label: "Stock Reconciliation", icon: Package },
+    { path: "/stock", label: "Stock Recon", icon: Package },
     { path: "/sales", label: "New Sale", icon: ShoppingCart },
     { path: "/shifts", label: "Shifts", icon: Clock },
     { path: "/shift-report", label: "Shift Reports", icon: FileText },
+    { path: "/staff", label: "Staff Management", icon: Users },
     { path: "/cash", label: "Cash Collection", icon: DollarSign },
     { path: "/expenses", label: "Expenses", icon: Receipt },
     { path: "/profit-loss", label: "Profit & Loss", icon: TrendingUp },
@@ -64,111 +66,144 @@ export default function DashboardLayout({
   ];
 
   const adminItems = [
-    { path: "/staff", label: "Staff Management", icon: Users },
-    { path: "/fuel-management", label: "Fuel Management", icon: Fuel },
+    { path: "/fuel-management", label: "Fuel Mgmt", icon: Fuel },
     { path: "/prices", label: "Price Updates", icon: Settings },
   ];
 
+  const NavLink = ({
+    path,
+    label,
+    icon: Icon,
+    onNavigate,
+  }: {
+    path: string;
+    label: string;
+    icon: React.ElementType;
+    onNavigate?: () => void;
+  }) => {
+    const isActive = location.pathname === path;
+    return (
+      <Link
+        to={path}
+        onClick={onNavigate}
+        data-ocid={`nav.${label.toLowerCase().replace(/[^a-z0-9]+/g, "_")}.link`}
+        className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 min-h-[44px] ${
+          isActive
+            ? "nav-active-gradient text-white"
+            : "text-white/55 hover:bg-white/8 hover:text-white/90"
+        }`}
+      >
+        {isActive && (
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full bg-primary" />
+        )}
+        <span
+          className={`w-8 h-8 flex items-center justify-center rounded-lg shrink-0 transition-colors ${
+            isActive ? "bg-primary/20" : "bg-white/5"
+          }`}
+        >
+          <Icon className="w-[15px] h-[15px]" />
+        </span>
+        <span className="text-[13px] font-medium leading-tight">{label}</span>
+      </Link>
+    );
+  };
+
+  const roleLabel = userProfile?.staffRole
+    ? String(userProfile.staffRole).charAt(0).toUpperCase() +
+      String(userProfile.staffRole).slice(1)
+    : "Staff";
+
   const NavContent = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
-      <nav className="flex-1 overflow-y-auto px-3 py-2.5 space-y-0.5">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={onNavigate}
-              data-ocid={`nav.${item.label.toLowerCase().replace(/\s+/g, "_")}.link`}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 min-h-[48px] group ${
-                isActive
-                  ? "nav-active-gradient text-white shadow-md"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <Icon className="w-[18px] h-[18px] shrink-0" />
-              <span className="text-sm font-medium leading-tight">
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+        {navItems.map((item) => (
+          <NavLink key={item.path} {...item} onNavigate={onNavigate} />
+        ))}
 
         {isAdmin && (
           <>
-            <div className="pt-4 pb-1.5">
+            <div className="pt-4 pb-2">
               <div className="flex items-center gap-2 px-3">
-                <div className="h-px flex-1 bg-white/10" />
-                <p className="text-[9px] font-bold text-white/40 uppercase tracking-[0.15em]">
-                  Admin
-                </p>
-                <div className="h-px flex-1 bg-white/10" />
+                <div className="h-px flex-1 bg-white/8" />
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-[0.18em]">
+                    Admin
+                  </p>
+                </div>
+                <div className="h-px flex-1 bg-white/8" />
               </div>
             </div>
-            {adminItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={onNavigate}
-                  data-ocid={`nav.admin_${item.label.toLowerCase().replace(/\s+/g, "_")}.link`}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 min-h-[48px] group ${
-                    isActive
-                      ? "nav-active-gradient text-white shadow-md"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  <Icon className="w-[18px] h-[18px] shrink-0" />
-                  <span className="text-sm font-medium leading-tight">
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            })}
+            {adminItems.map((item) => (
+              <NavLink key={item.path} {...item} onNavigate={onNavigate} />
+            ))}
           </>
         )}
       </nav>
 
-      {/* User Section */}
-      <div className="px-3 pb-3 pt-2 border-t border-white/10">
-        <div className="flex items-center gap-3 px-2 py-2.5 rounded-xl bg-white/5 mb-1.5">
-          {/* Avatar */}
-          <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
-            <span className="text-sm font-bold text-white">
-              {userProfile?.name?.charAt(0).toUpperCase() || "U"}
-            </span>
+      {/* User section */}
+      <div className="px-3 pb-4 pt-2 border-t border-white/8">
+        <div
+          className="flex items-center gap-3 px-3 py-3 rounded-xl mb-2"
+          style={{
+            background:
+              "linear-gradient(135deg, oklch(0.18 0.04 260 / 0.8), oklch(0.15 0.03 260 / 0.9))",
+            border: "1px solid oklch(0.65 0.20 45 / 0.15)",
+          }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm text-white"
+            style={{
+              background:
+                "linear-gradient(135deg, oklch(0.65 0.20 45), oklch(0.55 0.18 35))",
+            }}
+          >
+            {userProfile?.name?.charAt(0).toUpperCase() ?? "U"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate leading-tight">
-              {userProfile?.name || "User"}
+            <p className="text-sm font-semibold text-white truncate">
+              {userProfile?.name ?? "User"}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <p className="text-xs text-white/55 leading-tight truncate">
-                {userProfile?.staffRole
-                  ? String(userProfile.staffRole).charAt(0).toUpperCase() +
-                    String(userProfile.staffRole).slice(1)
-                  : "Staff"}
-              </p>
+              <span className="text-[11px] text-white/50">{roleLabel}</span>
               {isAdmin && (
-                <Badge className="text-[9px] px-1.5 py-0 h-[14px] flex items-center gap-0.5 bg-orange-500/25 text-orange-300 border-orange-400/20 hover:bg-orange-500/35 leading-none shrink-0">
-                  <Shield className="w-2 h-2" />
+                <Badge
+                  className="text-[9px] px-1.5 py-0 h-[14px] shrink-0"
+                  style={{
+                    background: "oklch(0.65 0.20 45 / 0.2)",
+                    color: "oklch(0.80 0.18 45)",
+                    border: "1px solid oklch(0.65 0.20 45 / 0.3)",
+                  }}
+                >
+                  <Shield className="w-2 h-2 mr-0.5" />
                   Admin
                 </Badge>
               )}
             </div>
           </div>
         </div>
+        <div className="mb-2.5">
+          <OfflineStatusIndicator />
+        </div>
         <button
           type="button"
           onClick={handleLogout}
           data-ocid="nav.logout.button"
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-300/80 hover:text-red-300 hover:bg-red-500/15 rounded-lg transition-colors duration-150 min-h-[44px]"
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-xl transition-colors duration-150 min-h-[44px]"
+          style={{
+            color: "oklch(0.65 0.20 15 / 0.7)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "oklch(0.62 0.22 15 / 0.12)";
+            e.currentTarget.style.color = "oklch(0.72 0.22 15)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "";
+            e.currentTarget.style.color = "oklch(0.65 0.20 15 / 0.7)";
+          }}
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          Logout
+          <span className="font-medium">Sign Out</span>
         </button>
       </div>
     </>
@@ -177,17 +212,35 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 sidebar-gradient border-r border-white/8 flex-col shrink-0">
-        {/* Brand Header — premium treatment */}
-        <div className="sidebar-brand-header flex items-center gap-3 px-5 min-h-[72px] border-b border-white/10 shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shrink-0 shadow-lg">
-            <Flame className="w-5 h-5 text-white" />
+      <aside
+        className="hidden md:flex w-62 sidebar-gradient flex-col shrink-0"
+        style={{ width: "248px" }}
+      >
+        {/* Brand Header */}
+        <div className="sidebar-brand-header flex items-center gap-3 px-5 min-h-[68px] border-b border-white/8 shrink-0">
+          <div className="relative">
+            <div
+              className="absolute inset-0 rounded-xl blur-md"
+              style={{ background: "oklch(0.65 0.20 45 / 0.4)" }}
+            />
+            <div
+              className="relative w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{
+                background:
+                  "linear-gradient(135deg, oklch(0.65 0.20 45), oklch(0.55 0.18 35))",
+              }}
+            >
+              <Flame className="w-5 h-5 text-white" />
+            </div>
           </div>
           <div className="min-w-0">
-            <h2 className="text-base font-bold text-white leading-tight tracking-tight">
+            <h2
+              className="text-sm font-bold leading-tight gradient-text"
+              style={{ fontFamily: '"Bricolage Grotesque",system-ui' }}
+            >
               Fuel Station
             </h2>
-            <p className="text-[11px] text-white/50 font-medium tracking-wide mt-0.5">
+            <p className="text-[10px] text-white/40 font-medium tracking-wide mt-0.5">
               Management System
             </p>
           </div>
@@ -199,65 +252,96 @@ export default function DashboardLayout({
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent
           side="left"
-          className="w-72 p-0 flex flex-col sidebar-gradient border-r border-white/8"
+          className="w-72 p-0 border-r border-white/8 flex flex-col"
+          style={{
+            background:
+              "linear-gradient(180deg, oklch(0.13 0.05 260) 0%, oklch(0.10 0.03 260) 100%)",
+          }}
         >
-          {/* Brand Header in Drawer — same premium treatment */}
-          <SheetHeader className="shrink-0 border-b border-white/10 sidebar-brand-header">
-            <SheetTitle className="text-left px-5 min-h-[72px] flex items-center">
-              <div className="flex items-center gap-3 w-full">
-                <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shrink-0 shadow-lg">
-                  <Flame className="w-5 h-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-base font-bold text-white leading-tight tracking-tight block">
-                    Fuel Station
-                  </span>
-                  <p className="text-[11px] text-white/50 font-medium tracking-wide mt-0.5">
-                    Management System
-                  </p>
-                </div>
+          <SheetHeader className="sidebar-brand-header px-5 min-h-[68px] border-b border-white/8 flex-row items-center justify-start gap-3 space-y-0 shrink-0">
+            <div className="relative">
+              <div
+                className="absolute inset-0 rounded-xl blur-md"
+                style={{ background: "oklch(0.65 0.20 45 / 0.4)" }}
+              />
+              <div
+                className="relative w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.65 0.20 45), oklch(0.55 0.18 35))",
+                }}
+              >
+                <Flame className="w-5 h-5 text-white" />
               </div>
+            </div>
+            <SheetTitle
+              className="text-sm font-bold gradient-text"
+              style={{ fontFamily: '"Bricolage Grotesque",system-ui' }}
+            >
+              Fuel Station
             </SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden">
             <NavContent onNavigate={() => setMobileMenuOpen(false)} />
           </div>
         </SheetContent>
       </Sheet>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto flex flex-col min-w-0">
-        {/* Mobile Header — consistent height with sidebar brand */}
-        <header className="md:hidden flex items-center gap-2 px-4 mobile-header-gradient text-white sticky top-0 z-10 shadow-lg safe-top min-h-[60px]">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 rounded-lg hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
-            aria-label="Open menu"
-            data-ocid="nav.menu.button"
-          >
-            <Menu className="w-5 h-5 text-white" />
-          </button>
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
-              <Flame className="w-3.5 h-3.5 text-white" />
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile top bar */}
+        <header
+          className="md:hidden flex items-center justify-between px-4 min-h-[60px] border-b border-white/8 shrink-0"
+          style={{
+            background:
+              "linear-gradient(90deg, oklch(0.13 0.05 260) 0%, oklch(0.10 0.03 260) 100%)",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2.5 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+              data-ocid="nav.mobile_menu.button"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Zap
+                  className="w-4 h-4"
+                  style={{ color: "oklch(0.65 0.20 45)" }}
+                />
+              </div>
+              <span
+                className="text-sm font-bold gradient-text"
+                style={{ fontFamily: '"Bricolage Grotesque",system-ui' }}
+              >
+                Fuel Station
+              </span>
             </div>
-            <span className="text-sm font-bold text-white truncate">
-              Fuel Station
-            </span>
           </div>
-          <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center shrink-0 shadow-sm">
-            <span className="text-xs font-bold text-white">
-              {userProfile?.name?.charAt(0).toUpperCase() || "U"}
-            </span>
+          <div className="flex items-center gap-2">
+            <OfflineStatusIndicator />
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, oklch(0.65 0.20 45), oklch(0.55 0.18 35))",
+              }}
+            >
+              {userProfile?.name?.charAt(0).toUpperCase() ?? "U"}
+            </div>
           </div>
         </header>
 
-        <OfflineStatusIndicator />
-        <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto w-full flex-1">
-          {children}
-        </div>
-      </main>
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="px-4 py-5 sm:px-6 sm:py-6 max-w-7xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

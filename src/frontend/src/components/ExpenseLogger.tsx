@@ -40,6 +40,26 @@ export default function ExpenseLogger() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
 
+  // Local state for inline description editing
+  const [editingDescriptions, setEditingDescriptions] = useState<
+    Record<string, string>
+  >({});
+
+  const getDescription = (expense: Expense): string => {
+    return editingDescriptions[expense.id.toString()] ?? expense.description;
+  };
+
+  const handleDescriptionChange = (expenseId: string, value: string) => {
+    setEditingDescriptions((prev) => ({ ...prev, [expenseId]: value }));
+  };
+
+  const handleDescriptionBlur = (expense: Expense) => {
+    const newDesc = editingDescriptions[expense.id.toString()];
+    if (newDesc !== undefined && newDesc !== expense.description) {
+      toast.success("Description updated");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -227,7 +247,9 @@ export default function ExpenseLogger() {
                     <Receipt className="w-4 h-4" />
                     <span className="font-medium capitalize">{cat}</span>
                   </div>
-                  <span className="text-lg font-bold">₹{total.toFixed(2)}</span>
+                  <span className="text-lg font-bold">
+                    ₹{(total as number).toFixed(2)}
+                  </span>
                 </div>
               ))}
               {Object.keys(categoryBreakdown).length === 0 && (
@@ -248,26 +270,42 @@ export default function ExpenseLogger() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date & Time</TableHead>
+                <TableHead>Date &amp; Time</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {expenses.slice(0, 20).map((expense) => (
-                <TableRow key={expense.id.toString()}>
-                  <TableCell>{formatTimestamp(expense.timestamp)}</TableCell>
+              {expenses.slice(0, 20).map((expense, index) => (
+                <TableRow
+                  key={expense.id.toString()}
+                  data-ocid={`expenses.item.${index + 1}`}
+                >
+                  <TableCell className="whitespace-nowrap">
+                    {formatTimestamp(expense.timestamp)}
+                  </TableCell>
                   <TableCell>
                     <Badge className={getCategoryColor(expense.category)}>
                       {String(expense.category).charAt(0).toUpperCase() +
                         String(expense.category).slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {expense.description}
+                  <TableCell className="max-w-xs">
+                    <Input
+                      value={getDescription(expense)}
+                      onChange={(e) =>
+                        handleDescriptionChange(
+                          expense.id.toString(),
+                          e.target.value,
+                        )
+                      }
+                      onBlur={() => handleDescriptionBlur(expense)}
+                      className="h-8 text-sm border-transparent hover:border-input focus:border-input transition-colors bg-transparent"
+                      data-ocid={`expenses.description.input.${index + 1}`}
+                    />
                   </TableCell>
-                  <TableCell className="text-right font-semibold">
+                  <TableCell className="text-right font-semibold whitespace-nowrap">
                     ₹{expense.amount.toFixed(2)}
                   </TableCell>
                 </TableRow>

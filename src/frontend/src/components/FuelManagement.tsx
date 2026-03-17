@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Fuel, Trash2 } from "lucide-react";
+import { Calculator, Fuel, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -27,10 +27,8 @@ interface FuelInvoice {
   invoiceNumber?: string;
   date: string;
   type: "combined" | "separate";
-  // combined mode
   price?: number;
   quantity?: number;
-  // separate mode
   petrolPrice?: number;
   petrolQty?: number;
   dieselPrice?: number;
@@ -57,22 +55,36 @@ function todayString() {
   return new Date().toISOString().split("T")[0];
 }
 
-function calcPricePerLiter(price?: number, qty?: number): string {
-  if (!price || !qty || qty === 0) return "—";
-  return (price / qty).toFixed(2);
+function calcPPL(price?: number, qty?: number): number | null {
+  if (!price || !qty || qty === 0) return null;
+  return price / qty;
+}
+
+function PPLBadge({ price, qty }: { price: string; qty: string }) {
+  const ppl = calcPPL(
+    price ? Number(price) : undefined,
+    qty ? Number(qty) : undefined,
+  );
+  if (ppl === null)
+    return <span className="text-foreground/30 text-sm">—</span>;
+  return (
+    <div className="flex items-center gap-1.5">
+      <Calculator className="w-3.5 h-3.5 text-primary shrink-0" />
+      <span className="text-base font-bold text-primary tabular-nums">
+        PKR {ppl.toFixed(2)}/L
+      </span>
+    </div>
+  );
 }
 
 export default function FuelManagement() {
   const [invoices, setInvoices] = useState<FuelInvoice[]>([]);
   const [separateMode, setSeparateMode] = useState(false);
 
-  // combined form state
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [date, setDate] = useState(todayString());
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-
-  // separate form state
   const [petrolPrice, setPetrolPrice] = useState("");
   const [petrolQty, setPetrolQty] = useState("");
   const [dieselPrice, setDieselPrice] = useState("");
@@ -81,19 +93,6 @@ export default function FuelManagement() {
   useEffect(() => {
     setInvoices(loadInvoices());
   }, []);
-
-  const pricePerLiterCombined = calcPricePerLiter(
-    price ? Number(price) : undefined,
-    quantity ? Number(quantity) : undefined,
-  );
-  const petrolPPL = calcPricePerLiter(
-    petrolPrice ? Number(petrolPrice) : undefined,
-    petrolQty ? Number(petrolQty) : undefined,
-  );
-  const dieselPPL = calcPricePerLiter(
-    dieselPrice ? Number(dieselPrice) : undefined,
-    dieselQty ? Number(dieselQty) : undefined,
-  );
 
   const resetForm = () => {
     setInvoiceNumber("");
@@ -108,7 +107,6 @@ export default function FuelManagement() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!date) {
       toast.error("Please select an invoice date.");
       return;
@@ -117,15 +115,10 @@ export default function FuelManagement() {
     let newInvoices: FuelInvoice[];
 
     if (separateMode) {
-      if (!petrolPrice && !petrolQty && !dieselPrice && !dieselQty) {
-        toast.error("Please enter at least petrol or diesel details.");
-        return;
-      }
-
       const entries: FuelInvoice[] = [];
       if (petrolPrice || petrolQty) {
         if (!petrolPrice || !petrolQty) {
-          toast.error("Please fill both Petrol price and quantity.");
+          toast.error("Fill both Petrol price and quantity.");
           return;
         }
         entries.push({
@@ -139,7 +132,7 @@ export default function FuelManagement() {
       }
       if (dieselPrice || dieselQty) {
         if (!dieselPrice || !dieselQty) {
-          toast.error("Please fill both Diesel price and quantity.");
+          toast.error("Fill both Diesel price and quantity.");
           return;
         }
         entries.push({
@@ -151,33 +144,33 @@ export default function FuelManagement() {
           dieselQty: Number(dieselQty),
         });
       }
-
       if (entries.length === 0) {
         toast.error("Please enter fuel details.");
         return;
       }
-
       newInvoices = [...invoices, ...entries];
     } else {
       if (!price || !quantity) {
-        toast.error("Please enter invoice price and quantity.");
+        toast.error("Enter invoice price and quantity.");
         return;
       }
-      const entry: FuelInvoice = {
-        id: `${Date.now()}`,
-        invoiceNumber: invoiceNumber || undefined,
-        date,
-        type: "combined",
-        price: Number(price),
-        quantity: Number(quantity),
-      };
-      newInvoices = [...invoices, entry];
+      newInvoices = [
+        ...invoices,
+        {
+          id: `${Date.now()}`,
+          invoiceNumber: invoiceNumber || undefined,
+          date,
+          type: "combined",
+          price: Number(price),
+          quantity: Number(quantity),
+        },
+      ];
     }
 
     setInvoices(newInvoices);
     saveInvoices(newInvoices);
     resetForm();
-    toast.success("Invoice saved successfully.");
+    toast.success("Invoice saved.");
   };
 
   const handleDelete = (id: string) => {
@@ -187,7 +180,6 @@ export default function FuelManagement() {
     toast.success("Invoice deleted.");
   };
 
-  // Flatten invoices for table display
   interface DisplayRow {
     id: string;
     invoiceNumber?: string;
@@ -195,7 +187,7 @@ export default function FuelManagement() {
     fuelType: string;
     invoicePrice: number;
     invoiceQty: number;
-    pricePerLiter: string;
+    ppl: number | null;
   }
 
   const rows: DisplayRow[] = invoices.flatMap((inv) => {
@@ -208,11 +200,10 @@ export default function FuelManagement() {
           fuelType: "Combined",
           invoicePrice: inv.price ?? 0,
           invoiceQty: inv.quantity ?? 0,
-          pricePerLiter: calcPricePerLiter(inv.price, inv.quantity),
+          ppl: calcPPL(inv.price, inv.quantity),
         },
       ];
     }
-    // separate
     const result: DisplayRow[] = [];
     if (inv.petrolPrice !== undefined && inv.petrolQty !== undefined) {
       result.push({
@@ -222,7 +213,7 @@ export default function FuelManagement() {
         fuelType: "Petrol",
         invoicePrice: inv.petrolPrice,
         invoiceQty: inv.petrolQty,
-        pricePerLiter: calcPricePerLiter(inv.petrolPrice, inv.petrolQty),
+        ppl: calcPPL(inv.petrolPrice, inv.petrolQty),
       });
     }
     if (inv.dieselPrice !== undefined && inv.dieselQty !== undefined) {
@@ -233,7 +224,7 @@ export default function FuelManagement() {
         fuelType: "Diesel",
         invoicePrice: inv.dieselPrice,
         invoiceQty: inv.dieselQty,
-        pricePerLiter: calcPricePerLiter(inv.dieselPrice, inv.dieselQty),
+        ppl: calcPPL(inv.dieselPrice, inv.dieselQty),
       });
     }
     return result;
@@ -241,244 +232,236 @@ export default function FuelManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center gap-3 page-header-accent">
-        <div className="w-11 h-11 rounded-xl bg-orange-500/15 flex items-center justify-center ring-2 ring-orange-400/20">
-          <Fuel className="w-5 h-5 text-orange-500" />
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-11 h-11 rounded-xl glass-card-bright flex items-center justify-center ring-1 ring-primary/30">
+          <Fuel className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">Fuel Management</h1>
-          <p className="text-muted-foreground mt-0.5">
-            Track fuel invoices and calculate price per liter
+          <h1
+            className="text-2xl sm:text-3xl font-bold page-header-accent"
+            style={{ fontFamily: '"Bricolage Grotesque",system-ui' }}
+          >
+            Fuel Management
+          </h1>
+          <p className="text-foreground/50 mt-0.5 text-sm">
+            Track invoices and auto-calculate price per liter
           </p>
         </div>
       </div>
 
       {/* Add Invoice Form */}
-      <Card className="card-gradient shadow-sm border border-border">
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-6 rounded-full bg-gradient-to-b from-orange-400 to-orange-600" />
-            <CardTitle>Add Fuel Invoice</CardTitle>
-          </div>
-          <CardDescription>
-            Enter invoice details to calculate price per liter
+      <Card className="glass-card border-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-foreground">Add Fuel Invoice</CardTitle>
+          <CardDescription className="text-foreground/50">
+            Price per liter is calculated live as you type
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Invoice Number + Invoice Date row */}
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="invoice-number">Invoice Number</Label>
+                <Label className="text-foreground/70">Invoice Number</Label>
                 <Input
-                  id="invoice-number"
                   type="text"
                   placeholder="e.g. INV-2024-001"
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
+                  className="border-border/60 bg-input/50"
                   data-ocid="fuel.invoice_number.input"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="invoice-date">Invoice Date</Label>
+                <Label className="text-foreground/70">Invoice Date</Label>
                 <Input
-                  id="invoice-date"
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  data-ocid="fuel.input"
+                  className="border-border/60 bg-input/50"
+                  data-ocid="fuel.date.input"
                 />
               </div>
             </div>
 
-            {/* Separate Mode Toggle */}
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+            {/* Separate toggle */}
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
               <Switch
-                id="separate-mode"
+                id="sep"
                 checked={separateMode}
                 onCheckedChange={setSeparateMode}
                 data-ocid="fuel.switch"
               />
               <Label
-                htmlFor="separate-mode"
-                className="cursor-pointer font-medium"
+                htmlFor="sep"
+                className="cursor-pointer font-medium text-foreground/80"
               >
                 Enter separately for Petrol &amp; Diesel
               </Label>
             </div>
 
-            {/* Combined Mode */}
+            {/* Combined mode */}
             {!separateMode && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                <div className="space-y-2">
-                  <Label htmlFor="invoice-price">Invoice Price (₹)</Label>
-                  <Input
-                    id="invoice-price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="e.g. 5000"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    data-ocid="fuel.input"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="invoice-qty">Invoice Quantity (L)</Label>
-                  <Input
-                    id="invoice-qty"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="e.g. 50"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    data-ocid="fuel.input"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Price Per Liter (₹/L)</Label>
-                  <div className="flex items-center h-10 px-3 rounded-md border border-input bg-muted/50">
-                    <span className="text-sm font-semibold text-primary">
-                      {pricePerLiterCombined !== "—"
-                        ? `₹${pricePerLiterCombined}`
-                        : "—"}
-                    </span>
-                    {pricePerLiterCombined !== "—" && (
-                      <Badge variant="secondary" className="ml-auto text-xs">
-                        Auto
-                      </Badge>
-                    )}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-foreground/70">
+                      Invoice Price (PKR)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g. 50000"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="border-border/60 bg-input/50"
+                      data-ocid="fuel.price.input"
+                    />
                   </div>
+                  <div className="space-y-2">
+                    <Label className="text-foreground/70">
+                      Quantity (Liters)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g. 500"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="border-border/60 bg-input/50"
+                      data-ocid="fuel.quantity.input"
+                    />
+                  </div>
+                </div>
+                {/* Live PPL preview */}
+                <div className="flex items-center justify-between p-4 rounded-xl bg-primary/10 border border-primary/25">
+                  <span className="text-sm font-medium text-foreground/70">
+                    Price Per Liter:
+                  </span>
+                  <PPLBadge price={price} qty={quantity} />
                 </div>
               </div>
             )}
 
-            {/* Separate Mode */}
+            {/* Separate mode */}
             {separateMode && (
               <div className="space-y-4">
-                {/* Petrol Row */}
-                <div className="p-4 rounded-lg border border-border bg-card space-y-3">
+                {/* Petrol */}
+                <div className="p-4 rounded-xl glass-card-bright space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                    <span className="text-sm font-semibold">Petrol</span>
+                    <div className="w-2.5 h-2.5 rounded-full bg-[oklch(0.68_0.17_160)]" />
+                    <span className="text-sm font-bold text-foreground">
+                      Petrol
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                    <div className="space-y-2">
-                      <Label htmlFor="petrol-price">Price (₹)</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-foreground/60 text-xs">
+                        Price (PKR)
+                      </Label>
                       <Input
-                        id="petrol-price"
                         type="number"
                         min="0"
                         step="0.01"
-                        placeholder="e.g. 3000"
+                        placeholder="30000"
                         value={petrolPrice}
                         onChange={(e) => setPetrolPrice(e.target.value)}
-                        data-ocid="fuel.input"
+                        className="border-border/60 bg-input/50"
+                        data-ocid="fuel.petrol_price.input"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="petrol-qty">Quantity (L)</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-foreground/60 text-xs">
+                        Quantity (L)
+                      </Label>
                       <Input
-                        id="petrol-qty"
                         type="number"
                         min="0"
                         step="0.01"
-                        placeholder="e.g. 30"
+                        placeholder="300"
                         value={petrolQty}
                         onChange={(e) => setPetrolQty(e.target.value)}
-                        data-ocid="fuel.input"
+                        className="border-border/60 bg-input/50"
+                        data-ocid="fuel.petrol_qty.input"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Price Per Liter (₹/L)</Label>
-                      <div className="flex items-center h-10 px-3 rounded-md border border-input bg-muted/50">
-                        <span className="text-sm font-semibold text-primary">
-                          {petrolPPL !== "—" ? `₹${petrolPPL}` : "—"}
-                        </span>
-                        {petrolPPL !== "—" && (
-                          <Badge
-                            variant="secondary"
-                            className="ml-auto text-xs"
-                          >
-                            Auto
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-[oklch(0.68_0.17_160)]/10 border border-[oklch(0.68_0.17_160)]/20">
+                    <span className="text-xs font-medium text-foreground/60">
+                      Petrol PPL:
+                    </span>
+                    <PPLBadge price={petrolPrice} qty={petrolQty} />
                   </div>
                 </div>
 
-                {/* Diesel Row */}
-                <div className="p-4 rounded-lg border border-border bg-card space-y-3">
+                {/* Diesel */}
+                <div className="p-4 rounded-xl glass-card-bright space-y-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                    <span className="text-sm font-semibold">Diesel</span>
+                    <div className="w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.19_240)]" />
+                    <span className="text-sm font-bold text-foreground">
+                      Diesel
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                    <div className="space-y-2">
-                      <Label htmlFor="diesel-price">Price (₹)</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-foreground/60 text-xs">
+                        Price (PKR)
+                      </Label>
                       <Input
-                        id="diesel-price"
                         type="number"
                         min="0"
                         step="0.01"
-                        placeholder="e.g. 2000"
+                        placeholder="20000"
                         value={dieselPrice}
                         onChange={(e) => setDieselPrice(e.target.value)}
-                        data-ocid="fuel.input"
+                        className="border-border/60 bg-input/50"
+                        data-ocid="fuel.diesel_price.input"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="diesel-qty">Quantity (L)</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-foreground/60 text-xs">
+                        Quantity (L)
+                      </Label>
                       <Input
-                        id="diesel-qty"
                         type="number"
                         min="0"
                         step="0.01"
-                        placeholder="e.g. 20"
+                        placeholder="200"
                         value={dieselQty}
                         onChange={(e) => setDieselQty(e.target.value)}
-                        data-ocid="fuel.input"
+                        className="border-border/60 bg-input/50"
+                        data-ocid="fuel.diesel_qty.input"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Price Per Liter (₹/L)</Label>
-                      <div className="flex items-center h-10 px-3 rounded-md border border-input bg-muted/50">
-                        <span className="text-sm font-semibold text-primary">
-                          {dieselPPL !== "—" ? `₹${dieselPPL}` : "—"}
-                        </span>
-                        {dieselPPL !== "—" && (
-                          <Badge
-                            variant="secondary"
-                            className="ml-auto text-xs"
-                          >
-                            Auto
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-[oklch(0.65_0.19_240)]/10 border border-[oklch(0.65_0.19_240)]/20">
+                    <span className="text-xs font-medium text-foreground/60">
+                      Diesel PPL:
+                    </span>
+                    <PPLBadge price={dieselPrice} qty={dieselQty} />
                   </div>
                 </div>
               </div>
             )}
 
-            <Button type="submit" data-ocid="fuel.submit_button">
+            <Button
+              type="submit"
+              className="w-full min-h-[44px]"
+              data-ocid="fuel.submit_button"
+            >
               Save Invoice
             </Button>
           </form>
         </CardContent>
       </Card>
 
-      {/* Invoice History Table */}
-      <Card className="shadow-sm border border-border">
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-6 rounded-full bg-gradient-to-b from-teal-400 to-teal-600" />
-            <CardTitle>Invoice History</CardTitle>
-          </div>
-          <CardDescription>
+      {/* Invoice History */}
+      <Card className="glass-card border-0">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-foreground">Invoice History</CardTitle>
+          <CardDescription className="text-foreground/50">
             All recorded fuel invoices with calculated price per liter
           </CardDescription>
         </CardHeader>
@@ -488,34 +471,36 @@ export default function FuelManagement() {
               className="flex flex-col items-center justify-center py-16 text-center gap-3"
               data-ocid="fuel.empty_state"
             >
-              <div className="w-16 h-16 rounded-2xl bg-orange-500/10 flex items-center justify-center ring-2 ring-orange-400/15">
-                <Fuel className="w-7 h-7 text-orange-400" />
+              <div className="w-16 h-16 rounded-2xl glass-card-bright flex items-center justify-center ring-1 ring-primary/20">
+                <Fuel className="w-7 h-7 text-primary" />
               </div>
               <p className="font-semibold text-foreground">
                 No invoices recorded yet
               </p>
-              <p className="text-sm text-muted-foreground">
-                Add your first fuel invoice above to get started
+              <p className="text-sm text-foreground/50">
+                Add your first fuel invoice above
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto" data-ocid="fuel.table">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/30">
-                    <TableHead className="font-semibold">Date</TableHead>
-                    <TableHead className="font-semibold">Invoice No.</TableHead>
-                    <TableHead className="font-semibold">Fuel Type</TableHead>
-                    <TableHead className="text-right font-semibold">
-                      Invoice Price (₹)
+                  <TableRow className="border-border/30 hover:bg-transparent">
+                    <TableHead className="text-foreground/60">Date</TableHead>
+                    <TableHead className="text-foreground/60">
+                      Invoice No.
                     </TableHead>
-                    <TableHead className="text-right font-semibold">
-                      Quantity (L)
+                    <TableHead className="text-foreground/60">Fuel</TableHead>
+                    <TableHead className="text-right text-foreground/60">
+                      Price (PKR)
                     </TableHead>
-                    <TableHead className="text-right font-semibold">
-                      Price Per Liter (₹/L)
+                    <TableHead className="text-right text-foreground/60">
+                      Qty (L)
                     </TableHead>
-                    <TableHead className="text-right font-semibold">
+                    <TableHead className="text-right text-foreground/60">
+                      PKR/L
+                    </TableHead>
+                    <TableHead className="text-right text-foreground/60">
                       Action
                     </TableHead>
                   </TableRow>
@@ -525,10 +510,10 @@ export default function FuelManagement() {
                     <TableRow
                       key={`${row.id}-${row.fuelType}`}
                       data-ocid={`fuel.item.${index + 1}`}
-                      className="hover:bg-orange-50/40 transition-colors"
+                      className="border-border/20 hover:bg-white/5 transition-colors"
                     >
-                      <TableCell className="font-medium text-sm">
-                        {new Date(row.date).toLocaleDateString("en-IN", {
+                      <TableCell className="font-medium text-sm text-foreground/80">
+                        {new Date(row.date).toLocaleDateString("en-PK", {
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
@@ -538,49 +523,45 @@ export default function FuelManagement() {
                         {row.invoiceNumber ? (
                           <Badge
                             variant="outline"
-                            className="font-mono text-xs border-orange-300/60 text-orange-700 bg-orange-50"
+                            className="font-mono text-xs border-primary/30 text-primary bg-primary/10"
                           >
                             {row.invoiceNumber}
                           </Badge>
                         ) : (
-                          <span className="text-muted-foreground text-sm">
-                            —
-                          </span>
+                          <span className="text-foreground/30 text-sm">—</span>
                         )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div
-                            className={`w-2.5 h-2.5 rounded-full ${
-                              row.fuelType === "Petrol"
-                                ? "bg-green-500"
-                                : row.fuelType === "Diesel"
-                                  ? "bg-blue-500"
-                                  : "bg-orange-400"
-                            }`}
+                            className={`w-2.5 h-2.5 rounded-full ${row.fuelType === "Petrol" ? "bg-[oklch(0.68_0.17_160)]" : row.fuelType === "Diesel" ? "bg-[oklch(0.65_0.19_240)]" : "bg-primary"}`}
                           />
-                          <span className="text-sm font-medium">
+                          <span className="text-sm font-medium text-foreground/80">
                             {row.fuelType}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right font-medium">
-                        ₹{row.invoicePrice.toLocaleString("en-IN")}
+                      <TableCell className="text-right font-medium text-foreground/80">
+                        PKR {row.invoicePrice.toLocaleString()}
                       </TableCell>
-                      <TableCell className="text-right text-sm">
-                        {row.invoiceQty.toLocaleString("en-IN")} L
+                      <TableCell className="text-right text-sm text-foreground/70">
+                        {row.invoiceQty.toLocaleString()} L
                       </TableCell>
                       <TableCell className="text-right">
-                        <Badge className="font-bold text-sm bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700">
-                          ₹{row.pricePerLiter}/L
-                        </Badge>
+                        {row.ppl !== null ? (
+                          <Badge className="font-bold bg-primary/20 text-primary border-primary/30 hover:bg-primary/30">
+                            PKR {row.ppl.toFixed(2)}/L
+                          </Badge>
+                        ) : (
+                          <span className="text-foreground/30">—</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(row.id)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/15"
                           data-ocid={`fuel.delete_button.${index + 1}`}
                         >
                           <Trash2 className="w-4 h-4" />

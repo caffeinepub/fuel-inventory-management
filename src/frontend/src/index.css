@@ -3,13 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Cabinet Grotesk";
-  src: url("/assets/fonts/CabinetGrotesk-Variable.woff2") format("woff2");
-  font-weight: 100 900;
-  font-display: swap;
-}
-
-@font-face {
   font-family: "Bricolage Grotesque";
   src: url("/assets/fonts/BricolageGrotesque-Variable.woff2") format("woff2");
   font-weight: 100 900;
@@ -27,390 +20,351 @@
   :root {
     --radius: 0.75rem;
 
-    /* Backgrounds */
-    --background: 0.98 0.01 80;
-    --foreground: 0.18 0.04 260;
+    /* ── Dark navy base (always dark) ── */
+    --background: 0.1 0.03 260;
+    --foreground: 0.93 0.02 260;
 
-    /* Cards */
-    --card: 1 0 0;
-    --card-foreground: 0.18 0.04 260;
+    /* Cards – glass panels */
+    --card: 0.14 0.03 260;
+    --card-foreground: 0.93 0.02 260;
 
     /* Popover */
-    --popover: 1 0 0;
-    --popover-foreground: 0.18 0.04 260;
+    --popover: 0.17 0.06 265;
+    --popover-foreground: 0.93 0.02 260;
 
-    /* Primary — Vivid Orange/Amber */
-    --primary: 0.72 0.19 45;
-    --primary-foreground: 1 0 0;
+    /* Primary – Vivid Orange */
+    --primary: 0.65 0.2 45;
+    --primary-foreground: 0.99 0 0;
 
-    /* Secondary — Soft warm gray */
-    --secondary: 0.94 0.02 70;
-    --secondary-foreground: 0.25 0.06 260;
+    /* Secondary – muted navy */
+    --secondary: 0.2 0.06 265;
+    --secondary-foreground: 0.85 0.03 260;
 
-    /* Muted — Light warm gray */
-    --muted: 0.95 0.01 80;
-    --muted-foreground: 0.52 0.04 250;
+    /* Muted */
+    --muted: 0.2 0.05 265;
+    --muted-foreground: 0.58 0.04 260;
 
-    /* Accent — Deep teal/cyan */
-    --accent: 0.68 0.16 195;
-    --accent-foreground: 1 0 0;
+    /* Accent – Teal */
+    --accent: 0.65 0.15 185;
+    --accent-foreground: 0.99 0 0;
 
-    /* Destructive */
-    --destructive: 0.577 0.245 27.325;
-    --destructive-foreground: 0.985 0 0;
+    /* Destructive – Rose */
+    --destructive: 0.62 0.22 15;
+    --destructive-foreground: 0.99 0 0;
 
     /* Border / Input / Ring */
-    --border: 0.88 0.03 75;
-    --input: 0.88 0.03 75;
-    --ring: 0.72 0.19 45;
+    --border: 0.22 0.04 260;
+    --input: 0.22 0.06 265;
+    --ring: 0.65 0.2 45;
 
-    /* Charts — Vivid multi-hue palette */
-    --chart-1: 0.72 0.19 45;
-    --chart-2: 0.68 0.16 195;
-    --chart-3: 0.65 0.2 290;
-    --chart-4: 0.72 0.22 330;
-    --chart-5: 0.68 0.18 145;
+    /* Charts */
+    --chart-1: 0.65 0.2 45;
+    --chart-2: 0.65 0.15 185;
+    --chart-3: 0.6 0.19 250;
+    --chart-4: 0.68 0.17 160;
+    --chart-5: 0.62 0.22 15;
 
-    /* Sidebar — Deep indigo/navy */
-    --sidebar: 0.25 0.08 270;
-    --sidebar-foreground: 0.97 0 0;
-    --sidebar-primary: 0.72 0.19 45;
-    --sidebar-primary-foreground: 1 0 0;
-    --sidebar-accent: 0.32 0.09 270;
-    --sidebar-accent-foreground: 0.97 0 0;
-    --sidebar-border: 1 0 0 / 12%;
-    --sidebar-ring: 0.72 0.19 45;
+    /* Sidebar */
+    --sidebar: 0.12 0.04 260;
+    --sidebar-foreground: 0.93 0.02 260;
+    --sidebar-primary: 0.65 0.2 45;
+    --sidebar-primary-foreground: 0.99 0 0;
+    --sidebar-accent: 0.16 0.06 265;
+    --sidebar-accent-foreground: 0.93 0.02 260;
+    --sidebar-border: 0.22 0.04 260;
+    --sidebar-ring: 0.65 0.2 45;
   }
 
   .dark {
-    --background: 0.14 0.03 260;
-    --foreground: 0.97 0.01 80;
-
-    --card: 0.19 0.04 260;
-    --card-foreground: 0.97 0.01 80;
-
-    --popover: 0.22 0.05 265;
-    --popover-foreground: 0.97 0.01 80;
-
-    --primary: 0.78 0.18 45;
-    --primary-foreground: 0.12 0.03 260;
-
-    --secondary: 0.26 0.05 265;
-    --secondary-foreground: 0.92 0.01 80;
-
-    --muted: 0.23 0.04 265;
-    --muted-foreground: 0.65 0.04 250;
-
-    --accent: 0.62 0.18 195;
-    --accent-foreground: 0.12 0.03 260;
-
-    --destructive: 0.704 0.191 22.216;
-    --destructive-foreground: 0.985 0 0;
-
-    --border: 1 0 0 / 12%;
-    --input: 1 0 0 / 15%;
-    --ring: 0.78 0.18 45;
-
-    --chart-1: 0.78 0.18 45;
-    --chart-2: 0.62 0.18 195;
-    --chart-3: 0.7 0.22 290;
-    --chart-4: 0.74 0.24 330;
-    --chart-5: 0.7 0.2 145;
-
-    --sidebar: 0.16 0.06 270;
-    --sidebar-foreground: 0.97 0 0;
-    --sidebar-primary: 0.78 0.18 45;
-    --sidebar-primary-foreground: 0.12 0.03 260;
-    --sidebar-accent: 0.22 0.07 270;
-    --sidebar-accent-foreground: 0.97 0 0;
-    --sidebar-border: 1 0 0 / 10%;
-    --sidebar-ring: 0.78 0.18 45;
+    --background: 0.1 0.03 260;
+    --foreground: 0.93 0.02 260;
+    --card: 0.14 0.03 260;
+    --card-foreground: 0.93 0.02 260;
+    --popover: 0.17 0.06 265;
+    --popover-foreground: 0.93 0.02 260;
+    --primary: 0.65 0.2 45;
+    --primary-foreground: 0.99 0 0;
+    --secondary: 0.2 0.06 265;
+    --secondary-foreground: 0.85 0.03 260;
+    --muted: 0.2 0.05 265;
+    --muted-foreground: 0.58 0.04 260;
+    --accent: 0.65 0.15 185;
+    --accent-foreground: 0.99 0 0;
+    --destructive: 0.62 0.22 15;
+    --destructive-foreground: 0.99 0 0;
+    --border: 0.22 0.04 260;
+    --input: 0.22 0.06 265;
+    --ring: 0.65 0.2 45;
+    --chart-1: 0.65 0.2 45;
+    --chart-2: 0.65 0.15 185;
+    --chart-3: 0.6 0.19 250;
+    --chart-4: 0.68 0.17 160;
+    --chart-5: 0.62 0.22 15;
+    --sidebar: 0.12 0.04 260;
+    --sidebar-foreground: 0.93 0.02 260;
+    --sidebar-primary: 0.65 0.2 45;
+    --sidebar-primary-foreground: 0.99 0 0;
+    --sidebar-accent: 0.16 0.06 265;
+    --sidebar-accent-foreground: 0.93 0.02 260;
+    --sidebar-border: 0.22 0.04 260;
+    --sidebar-ring: 0.65 0.2 45;
   }
+}
 
+@layer base {
   * {
     @apply border-border;
   }
-
+  html {
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground;
-    font-family: "Plus Jakarta Sans", "Cabinet Grotesk", system-ui, sans-serif;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    font-family: "Bricolage Grotesque", "Cabinet Grotesk", system-ui, sans-serif;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* =============================================
-   Fuel Station Stunning Theme Extras
-   ============================================= */
-
-.sidebar-gradient {
-  background: linear-gradient(
-    180deg,
-    oklch(0.22 0.1 270) 0%,
-    oklch(0.18 0.07 260) 100%
-  );
-}
-
-.card-gradient {
-  background: linear-gradient(135deg, oklch(1 0 0) 0%, oklch(0.97 0.02 50) 100%);
-}
-
-.header-brand-gradient {
-  background: linear-gradient(
-    135deg,
-    oklch(0.22 0.1 270) 0%,
-    oklch(0.28 0.12 290) 100%
-  );
-}
-
-.nav-active-gradient {
-  background: linear-gradient(
-    90deg,
-    oklch(0.72 0.19 45) 0%,
-    oklch(0.68 0.18 30) 100%
-  );
-}
-
-/* Vibrant dashboard card glow effects */
-.stat-card-orange {
-  background: linear-gradient(
-    135deg,
-    oklch(0.72 0.19 45) 0%,
-    oklch(0.65 0.22 35) 100%
-  );
-  color: white;
-}
-
-.stat-card-teal {
-  background: linear-gradient(
-    135deg,
-    oklch(0.68 0.16 195) 0%,
-    oklch(0.6 0.18 185) 100%
-  );
-  color: white;
-}
-
-.stat-card-purple {
-  background: linear-gradient(
-    135deg,
-    oklch(0.65 0.2 290) 0%,
-    oklch(0.58 0.22 280) 100%
-  );
-  color: white;
-}
-
-.stat-card-green {
-  background: linear-gradient(
-    135deg,
-    oklch(0.68 0.18 145) 0%,
-    oklch(0.6 0.2 140) 100%
-  );
-  color: white;
-}
-
-/* Fuel badge colors */
-.fuel-badge-petrol {
-  background: linear-gradient(
-    90deg,
-    oklch(0.68 0.18 145) 0%,
-    oklch(0.62 0.2 140) 100%
-  );
-  color: white;
-  border: none;
-}
-
-.fuel-badge-diesel {
-  background: linear-gradient(
-    90deg,
-    oklch(0.62 0.18 220) 0%,
-    oklch(0.56 0.2 210) 100%
-  );
-  color: white;
-  border: none;
-}
-
-/* Mobile header gradient */
-.mobile-header-gradient {
-  background: linear-gradient(
-    135deg,
-    oklch(0.22 0.1 270) 0%,
-    oklch(0.3 0.14 290) 100%
-  );
-}
-
-/* Page header accent bar */
-.page-header-accent {
-  border-left: 4px solid oklch(0.72 0.19 45);
-  padding-left: 0.75rem;
-}
-
-/* Glassmorphism card for special sections */
-.glass-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(255, 248, 235, 0.9) 100%
-  );
-  backdrop-filter: blur(12px);
-  border: 1px solid oklch(0.88 0.04 70);
-  box-shadow: 0 4px 24px oklch(0.72 0.19 45 / 0.08), 0 1px 4px
-    oklch(0.18 0.04 260 / 0.06);
-}
-
-/* Animated gradient border for active states */
-.active-glow {
-  box-shadow: 0 0 0 2px oklch(0.72 0.19 45 / 0.4), 0 4px 16px
-    oklch(0.72 0.19 45 / 0.15);
-}
-
-/* Tank level bar gradients */
-.tank-bar-petrol {
-  background: linear-gradient(
-    90deg,
-    oklch(0.72 0.2 145) 0%,
-    oklch(0.65 0.22 155) 100%
-  );
-}
-
-.tank-bar-diesel {
-  background: linear-gradient(
-    90deg,
-    oklch(0.68 0.18 220) 0%,
-    oklch(0.62 0.2 210) 100%
-  );
-}
-
-.tank-bar-low {
-  background: linear-gradient(
-    90deg,
-    oklch(0.65 0.22 25) 0%,
-    oklch(0.72 0.19 45) 100%
-  );
-}
-
-/* Colorful stat card shadow glows */
-.stat-card-orange {
-  background: linear-gradient(
-    135deg,
-    oklch(0.72 0.19 45) 0%,
-    oklch(0.65 0.22 35) 100%
-  );
-  color: white;
-  box-shadow: 0 8px 32px oklch(0.72 0.19 45 / 0.35);
-}
-
-.stat-card-teal {
-  background: linear-gradient(
-    135deg,
-    oklch(0.68 0.16 195) 0%,
-    oklch(0.6 0.18 185) 100%
-  );
-  color: white;
-  box-shadow: 0 8px 32px oklch(0.68 0.16 195 / 0.35);
-}
-
-.stat-card-purple {
-  background: linear-gradient(
-    135deg,
-    oklch(0.65 0.2 290) 0%,
-    oklch(0.58 0.22 280) 100%
-  );
-  color: white;
-  box-shadow: 0 8px 32px oklch(0.65 0.2 290 / 0.35);
-}
-
-.stat-card-green {
-  background: linear-gradient(
-    135deg,
-    oklch(0.68 0.18 145) 0%,
-    oklch(0.6 0.2 140) 100%
-  );
-  color: white;
-  box-shadow: 0 8px 32px oklch(0.68 0.18 145 / 0.35);
-}
-
-/* Sidebar brand header — subtle gradient for visual weight */
-.sidebar-brand-header {
-  background: linear-gradient(
-    135deg,
-    oklch(0.2 0.09 275) 0%,
-    oklch(0.26 0.12 290) 100%
-  );
-  position: relative;
-}
-.sidebar-brand-header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    oklch(0.72 0.19 45 / 0.4) 40%,
-    oklch(0.72 0.19 45 / 0.4) 60%,
-    transparent 100%
-  );
-}
-
-/* Stat cards — inner highlight shimmer */
-.stat-card-orange,
-.stat-card-teal,
-.stat-card-purple,
-.stat-card-green {
-  position: relative;
-  overflow: hidden;
-}
-.stat-card-orange::before,
-.stat-card-teal::before,
-.stat-card-purple::before,
-.stat-card-green::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.45) 50%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-.stat-card-orange::after,
-.stat-card-teal::after,
-.stat-card-purple::after,
-.stat-card-green::after {
-  content: "";
-  position: absolute;
-  bottom: -40px;
-  right: -20px;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.07);
-  pointer-events: none;
-}
-
-/* Safe area top padding for mobile header */
-.safe-top {
-  padding-top: max(0.75rem, env(safe-area-inset-top));
-}
-
-/* Responsive touch target minimum */
-@media (max-width: 640px) {
-  button,
-  a[role="button"],
-  [data-ocid] {
-    min-height: 44px;
+@layer components {
+  /* ── Glass cards ── */
+  .glass-card {
+    background: oklch(0.14 0.03 260 / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.22 0.04 260 / 0.5);
+    border-radius: 16px;
   }
+
+  .glass-card-bright {
+    background: oklch(0.18 0.04 260 / 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid oklch(0.28 0.06 260 / 0.6);
+    border-radius: 16px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar-gradient {
+    background: linear-gradient(
+      180deg,
+      oklch(0.13 0.05 260) 0%,
+      oklch(0.1 0.03 260) 100%
+    );
+    border-right: 1px solid oklch(0.22 0.04 260 / 0.4);
+  }
+
+  .sidebar-brand-header {
+    background: linear-gradient(
+      135deg,
+      oklch(0.15 0.06 262) 0%,
+      oklch(0.11 0.04 262) 100%
+    );
+  }
+
+  .nav-active-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.65 0.2 45 / 0.25) 0%,
+      oklch(0.65 0.15 185 / 0.15) 100%
+    );
+    border: 1px solid oklch(0.65 0.2 45 / 0.3);
+    box-shadow: 0 0 12px oklch(0.65 0.2 45 / 0.12);
+  }
+
+  /* ── Gradient text ── */
+  .gradient-text {
+    background: linear-gradient(
+      135deg,
+      oklch(0.75 0.18 45),
+      oklch(0.7 0.15 185)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Stat cards ── */
+  .stat-card-orange {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.18 45 / 0.3),
+      oklch(0.45 0.15 35 / 0.2)
+    );
+    border: 1px solid oklch(0.65 0.2 45 / 0.25);
+  }
+  .stat-card-teal {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.15 185 / 0.3),
+      oklch(0.45 0.12 195 / 0.2)
+    );
+    border: 1px solid oklch(0.65 0.15 185 / 0.25);
+  }
+  .stat-card-blue {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.18 240 / 0.3),
+      oklch(0.45 0.15 250 / 0.2)
+    );
+    border: 1px solid oklch(0.65 0.18 240 / 0.25);
+  }
+  .stat-card-emerald {
+    background: linear-gradient(
+      135deg,
+      oklch(0.6 0.18 145 / 0.3),
+      oklch(0.5 0.15 155 / 0.2)
+    );
+    border: 1px solid oklch(0.65 0.18 145 / 0.25);
+  }
+  .stat-card-rose {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.2 15 / 0.3),
+      oklch(0.45 0.17 5 / 0.2)
+    );
+    border: 1px solid oklch(0.65 0.2 15 / 0.25);
+  }
+  .stat-card-green {
+    background: linear-gradient(
+      135deg,
+      oklch(0.6 0.17 160) 0%,
+      oklch(0.5 0.18 150) 100%
+    );
+    box-shadow: 0 4px 24px oklch(0.6 0.17 160 / 0.35);
+  }
+  .stat-card-purple {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.2 290) 0%,
+      oklch(0.45 0.22 280) 100%
+    );
+    box-shadow: 0 4px 24px oklch(0.55 0.2 290 / 0.35);
+  }
+
+  /* ── Tank bars ── */
+  .tank-bar-petrol {
+    background: linear-gradient(
+      90deg,
+      oklch(0.6 0.17 160),
+      oklch(0.68 0.19 155)
+    );
+  }
+  .tank-bar-diesel {
+    background: linear-gradient(
+      90deg,
+      oklch(0.55 0.17 250),
+      oklch(0.65 0.19 240)
+    );
+  }
+  .tank-bar-low {
+    background: linear-gradient(90deg, oklch(0.6 0.22 15), oklch(0.55 0.22 22));
+  }
+  .tank-bar-warning {
+    background: linear-gradient(90deg, oklch(0.78 0.19 85), oklch(0.72 0.2 78));
+  }
+
+  /* ── Page header accent ── */
+  .page-header-accent {
+    background: linear-gradient(
+      90deg,
+      oklch(0.93 0.02 260) 0%,
+      oklch(0.65 0.2 45) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  /* ── Live pulse dot ── */
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: oklch(0.68 0.17 160);
+    box-shadow: 0 0 0 0 oklch(0.68 0.17 160 / 0.6);
+    animation: live-pulse 2s ease-in-out infinite;
+  }
+
+  /* Input / select dark overrides */
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    color-scheme: dark;
+  }
+}
+
+@layer utilities {
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: oklch(0.14 0.04 262);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.28 0.06 265);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.36 0.07 265);
+  }
+}
+
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 oklch(0.68 0.17 160 / 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px oklch(0.68 0.17 160 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.68 0.17 160 / 0);
+  }
+}
+
+@keyframes blob-move-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(60px, -40px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.95);
+  }
+}
+@keyframes blob-move-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-50px, 50px) scale(1.05);
+  }
+  66% {
+    transform: translate(40px, -30px) scale(0.9);
+  }
+}
+@keyframes blob-move-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, 40px) scale(1.08);
+  }
+}
+
+.animate-blob-1 {
+  animation: blob-move-1 18s ease-in-out infinite;
+}
+.animate-blob-2 {
+  animation: blob-move-2 22s ease-in-out infinite;
+}
+.animate-blob-3 {
+  animation: blob-move-3 26s ease-in-out infinite;
 }
