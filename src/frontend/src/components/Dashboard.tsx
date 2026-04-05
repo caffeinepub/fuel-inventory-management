@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -15,11 +17,13 @@ import {
   Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   useGetExpenses,
   useGetSales,
   useGetShifts,
   useGetTanks,
+  useUpdateTankLevel,
 } from "../hooks/useQueries";
 
 function useLiveClock() {
@@ -58,6 +62,10 @@ export default function Dashboard() {
   const { data: sales = [], isLoading: salesLoading } = useGetSales();
   const { data: expenses = [], isLoading: expensesLoading } = useGetExpenses();
   const { data: shifts = [] } = useGetShifts();
+  const updateTankLevel = useUpdateTankLevel();
+
+  // Per-tank inline update state: { [tankId]: string }
+  const [tankInputs, setTankInputs] = useState<Record<string, string>>({});
 
   const isLoading = tanksLoading || salesLoading || expensesLoading;
 
@@ -111,6 +119,22 @@ export default function Dashboard() {
   const selectedOption =
     REFRESH_OPTIONS.find((o) => o.value === refreshInterval) ??
     REFRESH_OPTIONS[2];
+
+  const handleTankLevelUpdate = async (tankId: string) => {
+    const raw = tankInputs[tankId];
+    const newVolume = Number.parseFloat(raw ?? "");
+    if (Number.isNaN(newVolume) || newVolume < 0) {
+      toast.error("Please enter a valid volume");
+      return;
+    }
+    try {
+      await updateTankLevel.mutateAsync({ id: tankId, volume: newVolume });
+      toast.success(`Tank ${tankId} updated to ${newVolume.toFixed(0)} L`);
+      doRefresh();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to update tank level");
+    }
+  };
 
   const statCards = [
     {
@@ -459,6 +483,8 @@ export default function Dashboard() {
                     : isPetrol
                       ? "text-[oklch(0.68_0.17_160)]"
                       : "text-[oklch(0.65_0.19_240)]";
+                const inputVal =
+                  tankInputs[tank.id] ?? tank.currentVolume.toFixed(0);
                 return (
                   <div key={tank.id}>
                     <div className="flex items-center justify-between mb-1">
@@ -490,6 +516,42 @@ export default function Dashboard() {
                     <div className="flex justify-between text-[10px] text-foreground/40 mt-0.5 tabular-nums">
                       <span>{tank.currentVolume.toFixed(0)} L</span>
                       <span>{tank.capacity.toFixed(0)} L</span>
+                    </div>
+                    {/* Inline update form */}
+                    <div
+                      className="flex items-center gap-2 mt-2"
+                      data-ocid={`dashboard.tank_update.${tank.id}`}
+                    >
+                      <Input
+                        type="number"
+                        min="0"
+                        value={inputVal}
+                        onChange={(e) =>
+                          setTankInputs((prev) => ({
+                            ...prev,
+                            [tank.id]: e.target.value,
+                          }))
+                        }
+                        className="h-7 text-xs w-28 bg-white/5 border-white/15 focus:border-primary/50"
+                        placeholder="Volume (L)"
+                        data-ocid={`dashboard.tank_input.${tank.id}`}
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => handleTankLevelUpdate(tank.id)}
+                        disabled={updateTankLevel.isPending}
+                        className="h-7 text-xs px-2 font-semibold shrink-0"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, oklch(0.65 0.20 45), oklch(0.55 0.18 35))",
+                          color: "white",
+                          border: "none",
+                        }}
+                        data-ocid={`dashboard.tank_update_button.${tank.id}`}
+                      >
+                        Update
+                      </Button>
                     </div>
                   </div>
                 );

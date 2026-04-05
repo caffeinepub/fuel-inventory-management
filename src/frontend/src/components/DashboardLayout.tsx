@@ -31,7 +31,6 @@ import {
 import { useState } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useGetCallerUserProfile, useIsCallerAdmin } from "../hooks/useQueries";
-import OfflineStatusIndicator from "./OfflineStatusIndicator";
 
 export default function DashboardLayout({
   children,
@@ -182,9 +181,6 @@ export default function DashboardLayout({
             </div>
           </div>
         </div>
-        <div className="mb-2.5">
-          <OfflineStatusIndicator />
-        </div>
         <button
           type="button"
           onClick={handleLogout}
@@ -322,7 +318,6 @@ export default function DashboardLayout({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <OfflineStatusIndicator />
             <div
               className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold text-white"
               style={{

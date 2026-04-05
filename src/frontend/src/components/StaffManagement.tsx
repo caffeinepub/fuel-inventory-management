@@ -111,8 +111,8 @@ function StaffFormFields({
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <Label htmlFor="staffId">Principal ID</Label>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/8 text-white/40 font-medium">
-              Optional
+            <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium bg-orange-500/20 text-orange-300 border border-orange-500/30">
+              Required for login
             </span>
           </div>
           <div className="relative">
@@ -120,7 +120,7 @@ function StaffFormFields({
               id="staffId"
               value={staffId}
               onChange={(e) => onStaffIdChange?.(e.target.value)}
-              placeholder="Leave empty to auto-generate"
+              placeholder="Staff member's Internet Identity Principal ID"
               className={`pr-10 ${
                 principalIdError
                   ? "border-destructive"
@@ -145,8 +145,12 @@ function StaffFormFields({
               {principalIdError}
             </p>
           )}
-          <p className="text-xs text-muted-foreground mt-1">
-            Leave empty to auto-generate a unique ID
+          <p
+            className="text-xs mt-1"
+            style={{ color: "oklch(0.75 0.15 55 / 0.7)" }}
+          >
+            Staff must share their Principal ID from Internet Identity. Without
+            it, they cannot log in.
           </p>
         </div>
       )}
@@ -475,9 +479,31 @@ export default function StaffManagement() {
                   Add New Staff Member
                 </DialogTitle>
                 <DialogDescription>
-                  Fill in the details below. Principal ID is optional.
+                  Enter the staff member's Principal ID from their Internet
+                  Identity — this is required for them to log in.
                 </DialogDescription>
               </DialogHeader>
+              {/* Login info box */}
+              <div
+                className="rounded-xl p-3 text-xs"
+                style={{
+                  background: "oklch(0.65 0.20 45 / 0.08)",
+                  border: "1px solid oklch(0.65 0.20 45 / 0.2)",
+                }}
+              >
+                <p className="font-semibold text-foreground/80 mb-1">
+                  How does staff login work?
+                </p>
+                <p className="text-foreground/55 leading-relaxed">
+                  Each staff member must log in using their own{" "}
+                  <strong className="text-foreground/70">
+                    Internet Identity
+                  </strong>
+                  . Ask them to open the app, click "Sign In with Internet
+                  Identity", and share their Principal ID with you. Then enter
+                  it here.
+                </p>
+              </div>
               <StaffFormFields
                 showPrincipalField
                 staffId={staffId}
