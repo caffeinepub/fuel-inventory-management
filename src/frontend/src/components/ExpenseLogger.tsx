@@ -1,3 +1,14 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,18 +30,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { Receipt, WifiOff } from "lucide-react";
+import { Receipt, Trash2, WifiOff } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ExpenseCategory } from "../backend";
 import type { Expense } from "../backend";
 import { useConnectionMonitor } from "../hooks/useConnectionMonitor";
 import { useOfflineStorage } from "../hooks/useOfflineStorage";
-import { useGetExpenses, useRecordExpense } from "../hooks/useQueries";
+import {
+  useDeleteExpense,
+  useGetExpenses,
+  useRecordExpense,
+} from "../hooks/useQueries";
 
 export default function ExpenseLogger() {
   const { data: expenses = [] } = useGetExpenses();
   const recordExpense = useRecordExpense();
+  const deleteExpense = useDeleteExpense();
   const { isConnected } = useConnectionMonitor();
   const { addExpense } = useOfflineStorage();
 
@@ -57,6 +73,15 @@ export default function ExpenseLogger() {
     const newDesc = editingDescriptions[expense.id.toString()];
     if (newDesc !== undefined && newDesc !== expense.description) {
       toast.success("Description updated");
+    }
+  };
+
+  const handleDeleteExpense = async (expenseId: bigint) => {
+    try {
+      await deleteExpense.mutateAsync(expenseId);
+      toast.success("Expense deleted");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete expense");
     }
   };
 
@@ -274,6 +299,7 @@ export default function ExpenseLogger() {
                 <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -307,6 +333,40 @@ export default function ExpenseLogger() {
                   </TableCell>
                   <TableCell className="text-right font-semibold whitespace-nowrap">
                     ₹{expense.amount.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          disabled={deleteExpense.isPending}
+                          data-ocid={`expenses.delete_button.${index + 1}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Expense</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this ₹
+                            {expense.amount.toFixed(2)} expense? This action
+                            cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteExpense(expense.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}

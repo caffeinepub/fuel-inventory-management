@@ -34,6 +34,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
+  useDeleteCashCollection,
   useGetCashCollections,
   useGetSales,
   useRecordCashCollection,
@@ -48,12 +49,12 @@ export default function CashCollectionEntry() {
   const { data: collections = [] } = useGetCashCollections();
   const { data: sales = [] } = useGetSales();
   const recordCashCollection = useRecordCashCollection();
+  const deleteCashCollection = useDeleteCashCollection();
 
   const [amount, setAmount] = useState("");
   const [breakdown, setBreakdown] = useState("");
 
-  // Local overrides
-  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  // Local overrides for edit
   const [editedCollections, setEditedCollections] = useState<
     Record<string, EditableCollection>
   >({});
@@ -66,13 +67,13 @@ export default function CashCollectionEntry() {
     breakdown: "",
   });
 
-  const visibleCollections = collections.filter(
-    (c) => !deletedIds.has(c.id.toString()),
-  );
-
-  const handleDeleteCollection = (id: string) => {
-    setDeletedIds((prev) => new Set([...prev, id]));
-    toast.success("Collection record deleted");
+  const handleDeleteCollection = async (id: bigint) => {
+    try {
+      await deleteCashCollection.mutateAsync(id);
+      toast.success("Collection record deleted");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete collection record");
+    }
   };
 
   const openEditDialog = (collection: (typeof collections)[0]) => {
@@ -143,7 +144,7 @@ export default function CashCollectionEntry() {
     (s) => Number(s.timestamp) / 1_000_000 >= today.getTime(),
   );
   const todayRevenue = todaySales.reduce((sum, s) => sum + s.total, 0);
-  const todayCollections = visibleCollections.filter(
+  const todayCollections = collections.filter(
     (c) => Number(c.timestamp) / 1_000_000 >= today.getTime(),
   );
   const todayCash = todayCollections.reduce(
@@ -323,7 +324,7 @@ export default function CashCollectionEntry() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {visibleCollections.slice(0, 20).map((collection, index) => (
+              {collections.slice(0, 20).map((collection, index) => (
                 <TableRow
                   key={collection.id.toString()}
                   data-ocid={`cash.item.${index + 1}`}
@@ -352,6 +353,7 @@ export default function CashCollectionEntry() {
                             size="icon"
                             variant="ghost"
                             className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            disabled={deleteCashCollection.isPending}
                             data-ocid={`cash.delete_button.${index + 1}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -375,7 +377,7 @@ export default function CashCollectionEntry() {
                             </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() =>
-                                handleDeleteCollection(collection.id.toString())
+                                handleDeleteCollection(collection.id)
                               }
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               data-ocid="cash.delete.confirm_button"
@@ -392,7 +394,7 @@ export default function CashCollectionEntry() {
             </TableBody>
           </Table>
 
-          {visibleCollections.length === 0 && (
+          {collections.length === 0 && (
             <p className="text-center text-muted-foreground py-8">
               No collections recorded yet
             </p>

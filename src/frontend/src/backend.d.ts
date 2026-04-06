@@ -135,6 +135,11 @@ export interface backendInterface {
     addTank(tank: Tank): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
+    deleteCashCollection(collectionId: bigint): Promise<void>;
+    deleteExpense(expenseId: bigint): Promise<void>;
+    deleteSale(saleId: bigint): Promise<void>;
+    deleteShift(shiftId: bigint): Promise<void>;
+    deleteTank(id: string): Promise<void>;
     endShift(shiftId: bigint, endTime: bigint): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;

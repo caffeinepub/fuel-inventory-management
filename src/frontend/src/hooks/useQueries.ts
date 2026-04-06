@@ -124,6 +124,21 @@ export function useUpdateTankLevel() {
   });
 }
 
+export function useDeleteTank() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.deleteTank(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tanks"] });
+    },
+  });
+}
+
 // Sales Queries
 export function useGetSales() {
   const { actor, isFetching } = useActor();
@@ -178,6 +193,22 @@ export function useRecordSale() {
   });
 }
 
+export function useDeleteSale() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (saleId: bigint) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.deleteSale(saleId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["salesAndExpenses"] });
+    },
+  });
+}
+
 // Expense Queries
 export function useGetExpenses() {
   const { actor, isFetching } = useActor();
@@ -211,6 +242,22 @@ export function useRecordExpense() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    },
+  });
+}
+
+export function useDeleteExpense() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (expenseId: bigint) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.deleteExpense(expenseId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["salesAndExpenses"] });
     },
   });
 }
@@ -346,6 +393,21 @@ export function useEndShift() {
   });
 }
 
+export function useDeleteShift() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (shiftId: bigint) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.deleteShift(shiftId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["shifts"] });
+    },
+  });
+}
+
 // Cash Collection Queries
 export function useGetCashCollections() {
   const { actor, isFetching } = useActor();
@@ -371,6 +433,21 @@ export function useRecordCashCollection() {
     }: { amount: number; breakdown: string }) => {
       if (!actor) throw new Error("Actor not available");
       return actor.recordCashCollection(amount, breakdown);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cashCollections"] });
+    },
+  });
+}
+
+export function useDeleteCashCollection() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (collectionId: bigint) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.deleteCashCollection(collectionId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cashCollections"] });

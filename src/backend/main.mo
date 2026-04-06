@@ -236,6 +236,16 @@ actor {
     };
   };
 
+  public shared ({ caller }) func deleteTank(id : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete tanks");
+    };
+    switch (tanks.get(id)) {
+      case (null) { Runtime.trap("Tank not found") };
+      case (?_) { tanks.remove(id) };
+    };
+  };
+
   // Sales Management
   public shared ({ caller }) func recordSale(fuelType : FuelType, quantity : Float, rate : Float, openTotalizer : Float, endTotalizer : Float, saleDate : Int, staffId : Principal) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -277,6 +287,16 @@ actor {
     sales.values().toArray();
   };
 
+  public shared ({ caller }) func deleteSale(saleId : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete sales");
+    };
+    switch (sales.get(saleId)) {
+      case (null) { Runtime.trap("Sale not found") };
+      case (?_) { sales.remove(saleId) };
+    };
+  };
+
   // Expense Management
   public shared ({ caller }) func recordExpense(category : ExpenseCategory, amount : Float, description : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -298,6 +318,16 @@ actor {
       Runtime.trap("Unauthorized: Only users can view expenses");
     };
     expenses.values().toArray();
+  };
+
+  public shared ({ caller }) func deleteExpense(expenseId : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can delete expenses");
+    };
+    switch (expenses.get(expenseId)) {
+      case (null) { Runtime.trap("Expense not found") };
+      case (?_) { expenses.remove(expenseId) };
+    };
   };
 
   // Staff Management with Auto-Incremented Serial Numbers
@@ -458,6 +488,16 @@ actor {
     };
   };
 
+  public shared ({ caller }) func deleteShift(shiftId : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete shifts");
+    };
+    switch (shifts.get(shiftId)) {
+      case (null) { Runtime.trap("Shift not found") };
+      case (?_) { shifts.remove(shiftId) };
+    };
+  };
+
   public query ({ caller }) func getShifts() : async [ShiftView] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view shifts");
@@ -497,6 +537,16 @@ actor {
       Runtime.trap("Unauthorized: Only users can view cash collections");
     };
     cashCollections.values().toArray();
+  };
+
+  public shared ({ caller }) func deleteCashCollection(collectionId : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can delete cash collections");
+    };
+    switch (cashCollections.get(collectionId)) {
+      case (null) { Runtime.trap("Cash collection not found") };
+      case (?_) { cashCollections.remove(collectionId) };
+    };
   };
 
   // Price Update Management - Admin only

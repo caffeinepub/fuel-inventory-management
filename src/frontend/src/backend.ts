@@ -238,6 +238,11 @@ export interface backendInterface {
     recordExpense(category: ExpenseCategory, amount: number, description: string): Promise<void>;
     recordSale(fuelType: FuelType, quantity: number, rate: number, openTotalizer: number, endTotalizer: number, saleDate: bigint, staffId: Principal): Promise<void>;
     removeStaff(staffId: Principal): Promise<void>;
+    deleteCashCollection(collectionId: bigint): Promise<void>;
+    deleteExpense(expenseId: bigint): Promise<void>;
+    deleteSale(saleId: bigint): Promise<void>;
+    deleteShift(shiftId: bigint): Promise<void>;
+    deleteTank(id: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     startShift(staffId: Principal, shiftDate: bigint, startTime: bigint): Promise<bigint>;
@@ -603,6 +608,76 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.removeStaff(arg0);
+            return result;
+        }
+    }
+    async deleteCashCollection(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteCashCollection(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteCashCollection(arg0);
+            return result;
+        }
+    }
+    async deleteExpense(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteExpense(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteExpense(arg0);
+            return result;
+        }
+    }
+    async deleteSale(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteSale(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteSale(arg0);
+            return result;
+        }
+    }
+    async deleteShift(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteShift(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteShift(arg0);
+            return result;
+        }
+    }
+    async deleteTank(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteTank(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteTank(arg0);
             return result;
         }
     }

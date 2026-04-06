@@ -41,6 +41,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
+  useDeleteShift,
   useEndShift,
   useGetShifts,
   useGetStaff,
@@ -77,11 +78,9 @@ export default function ShiftManagement() {
   const { data: staff = [] } = useGetStaff();
   const startShift = useStartShift();
   const endShift = useEndShift();
+  const deleteShift = useDeleteShift();
 
-  // Local overrides
-  const [deletedShiftIds, setDeletedShiftIds] = useState<Set<string>>(
-    new Set(),
-  );
+  // Local overrides for edit
   const [editedShifts, setEditedShifts] = useState<
     Record<string, EditableShift>
   >({});
@@ -108,10 +107,7 @@ export default function ShiftManagement() {
     getCurrentDateTimeLocal(),
   );
 
-  const visibleShifts = shifts.filter(
-    (s) => !deletedShiftIds.has(s.id.toString()),
-  );
-  const activeShifts = visibleShifts.filter((s) => !s.endTime);
+  const activeShifts = shifts.filter((s) => !s.endTime);
 
   const getShiftData = (shift: (typeof shifts)[0]) => {
     const override = editedShifts[shift.id.toString()];
@@ -126,9 +122,13 @@ export default function ShiftManagement() {
     };
   };
 
-  const handleDeleteShift = (shiftId: string) => {
-    setDeletedShiftIds((prev) => new Set([...prev, shiftId]));
-    toast.success("Shift deleted");
+  const handleDeleteShift = async (shiftId: bigint) => {
+    try {
+      await deleteShift.mutateAsync(shiftId);
+      toast.success("Shift deleted");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete shift");
+    }
   };
 
   const openEditDialog = (shift: (typeof shifts)[0]) => {
@@ -368,7 +368,7 @@ export default function ShiftManagement() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {visibleShifts
+            {shifts
               .slice()
               .sort((a, b) => Number(b.id) - Number(a.id))
               .slice(0, 10)
@@ -410,6 +410,7 @@ export default function ShiftManagement() {
                               size="icon"
                               variant="ghost"
                               className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                              disabled={deleteShift.isPending}
                               data-ocid={`shifts.delete_button.${index + 1}`}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -429,9 +430,7 @@ export default function ShiftManagement() {
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() =>
-                                  handleDeleteShift(shift.id.toString())
-                                }
+                                onClick={() => handleDeleteShift(shift.id)}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 data-ocid="shifts.delete.confirm_button"
                               >
@@ -482,7 +481,7 @@ export default function ShiftManagement() {
                   </div>
                 );
               })}
-            {visibleShifts.length === 0 && (
+            {shifts.length === 0 && (
               <p className="text-center text-muted-foreground py-8">
                 No shifts recorded yet
               </p>

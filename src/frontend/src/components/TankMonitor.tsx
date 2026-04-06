@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import type { FuelType } from "../backend";
 import {
   useAddTank,
+  useDeleteTank,
   useGetTanks,
   useUpdateTankLevel,
 } from "../hooks/useQueries";
@@ -50,6 +51,7 @@ export default function TankMonitor() {
   const { data: tanks = [], isLoading } = useGetTanks();
   const updateTankLevel = useUpdateTankLevel();
   const addTank = useAddTank();
+  const deleteTank = useDeleteTank();
 
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [selectedTank, setSelectedTank] = useState<string | null>(null);
@@ -63,9 +65,6 @@ export default function TankMonitor() {
   const [newTankCapacity, setNewTankCapacity] = useState("");
   const [newTankVolume, setNewTankVolume] = useState("");
   const [newTankThreshold, setNewTankThreshold] = useState("");
-  const [deletedTankIds, setDeletedTankIds] = useState<Set<string>>(new Set());
-
-  const visibleTanks = tanks.filter((t) => !deletedTankIds.has(t.id));
 
   // 30-second real-time polling
   useEffect(() => {
@@ -78,9 +77,14 @@ export default function TankMonitor() {
     return () => clearInterval(interval);
   }, [queryClient]);
 
-  const handleDeleteTank = (tankId: string) => {
-    setDeletedTankIds((prev) => new Set([...prev, tankId]));
-    toast.success(`Tank ${tankId} deleted`);
+  const handleDeleteTank = async (tankId: string) => {
+    try {
+      await deleteTank.mutateAsync(tankId);
+      toast.success(`Tank ${tankId} deleted`);
+      setLastUpdated(new Date());
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete tank");
+    }
   };
 
   const handleUpdateLevel = async () => {
@@ -272,28 +276,27 @@ export default function TankMonitor() {
       </div>
 
       {/* Summary bar */}
-      {visibleTanks.length > 0 && (
+      {tanks.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             {
               label: "Petrol Tanks",
-              value: visibleTanks.filter((t) => t.fuelType === "petrol").length,
+              value: tanks.filter((t) => t.fuelType === "petrol").length,
               colorClass: "text-[oklch(0.68_0.17_160)]",
             },
             {
               label: "Diesel Tanks",
-              value: visibleTanks.filter((t) => t.fuelType === "diesel").length,
+              value: tanks.filter((t) => t.fuelType === "diesel").length,
               colorClass: "text-[oklch(0.65_0.19_240)]",
             },
             {
               label: "Low Alerts",
-              value: visibleTanks.filter((t) => t.currentVolume < t.threshold)
-                .length,
+              value: tanks.filter((t) => t.currentVolume < t.threshold).length,
               colorClass: "text-destructive",
             },
             {
               label: "Total (kL)",
-              value: `${(visibleTanks.reduce((s, t) => s + t.currentVolume, 0) / 1000).toFixed(1)}k`,
+              value: `${(tanks.reduce((s, t) => s + t.currentVolume, 0) / 1000).toFixed(1)}k`,
               colorClass: "text-primary",
             },
           ].map((s) => (
@@ -316,7 +319,7 @@ export default function TankMonitor() {
 
       {/* Tank cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {visibleTanks.map((tank, index) => {
+        {tanks.map((tank, index) => {
           const pct = Math.min((tank.currentVolume / tank.capacity) * 100, 100);
           const isLow = tank.currentVolume < tank.threshold;
           const isWarn = !isLow && pct < 60;
@@ -511,6 +514,7 @@ export default function TankMonitor() {
                         variant="outline"
                         size="icon"
                         className="min-h-[44px] min-w-[44px] border-destructive/30 text-destructive hover:bg-destructive/15 hover:border-destructive/60"
+                        disabled={deleteTank.isPending}
                         data-ocid={`tanks.delete_button.${index + 1}`}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -545,7 +549,7 @@ export default function TankMonitor() {
         })}
       </div>
 
-      {visibleTanks.length === 0 && (
+      {tanks.length === 0 && (
         <div
           className="glass-card rounded-2xl py-16 text-center"
           data-ocid="tanks.empty_state"
